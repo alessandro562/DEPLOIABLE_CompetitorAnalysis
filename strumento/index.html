@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il campo — Deploiable</title>
+<style>
+/* Tavolozza verificata da contrasto.py prima di scrivere questo CSS.
+   Un accento solo, riservato a una cosa sola: il buco. */
+:root{
+  --carta:#FFFFFF;
+  --carta-2:#F1EFEA;
+  --carta-3:#E4E1D9;
+  --inchiostro:#141310;
+  --inchiostro-2:#4C483F;
+  --bordo:#B9B5A9;
+  --bordo-forte:#7A756A;
+  --buco:#A81C06;
+  --buco-carta:#FBE7E2;
+  --s:14px; --p:12px; --g:22px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--carta); color:var(--inchiostro);
+  font:400 var(--s)/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--inchiostro);text-decoration:underline;text-underline-offset:2px}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--inchiostro);outline-offset:1px}
+button{font:inherit;color:inherit;background:none;border:1px solid var(--bordo);padding:3px 8px;cursor:pointer}
+button:hover{background:var(--carta-2)}
+button[aria-pressed="true"],button.on{background:var(--inchiostro);color:var(--carta);border-color:var(--inchiostro)}
+input,select,textarea{font:inherit;color:inherit;background:var(--carta);border:1px solid var(--bordo);padding:3px 6px}
+h1,h2,h3{font-weight:700;margin:0}
+h1{font-size:var(--g);line-height:1.15}
+h2{font-size:var(--s)}
+h3{font-size:var(--p);text-transform:uppercase;letter-spacing:.06em;color:var(--inchiostro-2)}
+p{margin:.5em 0}
+small{font-size:var(--p)}
+.q{color:var(--inchiostro-2)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+/* ---------------------------------------------------------------- telaio */
+#testata{
+  position:sticky;top:0;z-index:40;background:var(--carta);
+  border-bottom:1px solid var(--bordo-forte);
+  display:flex;align-items:center;gap:14px;padding:7px 14px;flex-wrap:wrap;
+}
+#testata .marchio{font-weight:700;letter-spacing:.02em}
+#testata nav{display:flex;gap:4px}
+#testata nav a{text-decoration:none;border:1px solid var(--bordo);padding:3px 10px}
+#testata nav a[aria-current="page"]{background:var(--inchiostro);color:var(--carta);border-color:var(--inchiostro)}
+#testata .spinta{margin-left:auto;display:flex;gap:8px;align-items:center}
+main{padding:16px 14px 60px;max-width:1500px}
+.riga-quindi{
+  border-top:2px solid var(--inchiostro);margin-top:18px;padding-top:8px;
+  display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;
+}
+.riga-quindi b{white-space:nowrap}
+.sezione{margin:22px 0 0}
+.sezione>h3{margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid var(--bordo)}
+.due{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
+
+/* ------------------------------------------------------------- tabelle */
+.avvolgi{overflow:auto;border:1px solid var(--bordo);max-height:74vh}
+table{border-collapse:collapse;width:100%;font-size:var(--p)}
+th,td{border-bottom:1px solid var(--bordo);border-right:1px solid var(--bordo);padding:3px 6px;text-align:left;vertical-align:top}
+thead th{
+  position:sticky;top:0;z-index:3;background:var(--carta-2);
+  border-bottom:1px solid var(--bordo-forte);font-weight:700;
+}
+tbody tr:hover td{background:var(--carta-2)}
+tbody tr.scelta td{background:var(--carta-3)}
+td.nome,th.nome{
+  position:sticky;left:0;z-index:2;background:var(--carta);
+  border-right:1px solid var(--bordo-forte);width:250px;min-width:250px;max-width:250px;
+}
+thead th.nome{z-index:4;background:var(--carta-2);vertical-align:bottom}
+tbody tr:hover td.nome{background:var(--carta-2)}
+tbody tr.scelta td.nome{background:var(--carta-3)}
+td.cella{text-align:center;width:54px;min-width:54px;padding:2px 3px}
+th.cella{vertical-align:bottom;padding:3px 2px;width:54px;min-width:54px}
+th.cella .vert{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:inline-block}
+.piena{font-weight:700}
+.vuota{color:var(--bordo-forte)}
+
+/* IL BUCO — l'unica cosa colorata dello strumento.
+   Nella griglia e un blocco pieno: da due metri si vedono i blocchi, non il testo. */
+.buco{background:var(--buco-carta);color:var(--buco);font-weight:700}
+td.buco{background:var(--buco);color:var(--carta);font-weight:700}
+tbody tr:hover td.buco,tbody tr.scelta td.buco{background:var(--buco);color:var(--carta)}
+tr.senza-catalogo td.nome,tr.senza-catalogo:hover td.nome{background:var(--buco);color:var(--carta)}
+tr.senza-catalogo td.nome a{color:var(--carta)}
+th.libero{background:var(--buco-carta);color:var(--buco);border-bottom:3px solid var(--buco)}
+.pallino{display:inline-block;width:9px;height:9px;background:var(--buco);vertical-align:baseline}
+.conto-buchi{font-size:34px;font-weight:700;color:var(--buco);line-height:1}
+
+/* --------------------------------------------------------------- barra */
+#barra{
+  position:sticky;top:39px;z-index:30;background:var(--carta-2);
+  border:1px solid var(--bordo);border-left:0;border-right:0;
+  padding:6px 14px;margin:0 -14px 12px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+}
+#barra .gruppo{display:flex;gap:3px;align-items:center}
+#barra .gruppo>span{font-size:var(--p);color:var(--inchiostro-2);margin-right:3px}
+#barra button{font-size:var(--p);padding:2px 7px;background:var(--carta)}
+#barra button.on{background:var(--inchiostro);color:var(--carta)}
+
+/* ------------------------------------------------------------- marcature */
+.mk{display:inline-block;min-width:15px;text-align:center;font-size:11px;font-weight:700;
+    border:1px solid var(--bordo-forte);padding:0 2px;font-family:ui-monospace,Menlo,monospace}
+.mk-V{border-width:2px;border-color:var(--inchiostro)}
+.mk-D{border-style:solid}
+.mk-S{border-style:dashed}
+.mk-N{border-color:var(--buco);color:var(--buco);background:var(--buco-carta)}
+
+/* ---------------------------------------------------------------- scheda */
+.scheda-testa{border-bottom:2px solid var(--inchiostro);padding-bottom:10px}
+dl.campi{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0;font-size:var(--p)}
+dl.campi dt{color:var(--inchiostro-2);white-space:nowrap}
+dl.campi dd{margin:0}
+.giud{border:1px solid var(--bordo);padding:6px 8px;margin-bottom:6px}
+.giud .capo{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.giud .val{font-weight:700}
+.giud .meta{font-size:11px;color:var(--inchiostro-2)}
+.modificato{border-left:5px solid var(--inchiostro)}
+.gradini{font-size:11px;color:var(--inchiostro-2);margin:2px 0 0;padding-left:1.1em}
+.gradini li{margin:0}
+.scala{display:inline-block;font-family:ui-monospace,Menlo,monospace;letter-spacing:2px}
+.lat{display:flex;flex-wrap:wrap;gap:6px}
+.lat a{font-size:var(--p);border:1px solid var(--bordo);padding:2px 7px;text-decoration:none}
+.lat a:hover{background:var(--carta-2)}
+
+/* ---------------------------------------------------------------- brief */
+#brief-doc{max-width:820px;border:1px solid var(--bordo-forte);padding:26px 30px;background:var(--carta)}
+#brief-doc h1{margin-bottom:2px}
+#brief-doc h3{margin-top:18px}
+#brief-doc table{font-size:var(--p);margin-top:4px}
+#brief-doc td,#brief-doc th{border-color:var(--bordo)}
+.pie{border-top:1px solid var(--bordo);margin-top:22px;padding-top:6px;font-size:11px;color:var(--inchiostro-2)}
+
+/* ---------------------------------------------------------- sovrapposti */
+.velo{position:fixed;inset:0;background:var(--carta);z-index:60;overflow:auto;padding:18px}
+.velo .box{max-width:720px;margin:0 auto;border:1px solid var(--bordo-forte);padding:16px;background:var(--carta)}
+#ricerca-esiti{list-style:none;margin:10px 0 0;padding:0}
+#ricerca-esiti li{border-bottom:1px solid var(--bordo);padding:5px 0}
+#ricerca-esiti .tipo{font-size:11px;color:var(--inchiostro-2);text-transform:uppercase;letter-spacing:.06em}
+.avviso{border:2px solid var(--buco);background:var(--buco-carta);color:var(--buco);padding:10px 12px;font-weight:700}
+
+/* ---------------------------------------------------------------- stampa */
+@media print{
+  #testata,#barra,.no-stampa,.lat{display:none !important}
+  body{font-size:10.5pt}
+  main{padding:0;max-width:none}
+  .avvolgi{max-height:none;overflow:visible;border:0}
+  thead th{position:static}
+  td.nome,th.nome{position:static}
+  #brief-doc{border:0;padding:0;max-width:none}
+  a{text-decoration:none}
+  tr,.giud,.sezione{break-inside:avoid}
+  /* Su carta il colore non arriva: il buco resta il piu evidente per contorno. */
+  .buco,td.buco,th.buco,tr.senza-catalogo td.nome{
+    background:transparent !important;color:var(--inchiostro) !important;
+    outline:1.5pt solid var(--inchiostro);font-weight:700;
+  }
+  th.libero{outline:1.5pt solid var(--inchiostro)}
+}
+</style>
+</head>
+<body>
+
+<header id="testata">
+  <span class="marchio">Il campo</span>
+  <nav id="nav"></nav>
+  <span class="spinta no-stampa">
+    <button id="btn-cerca" title="Cerca ovunque (/)">Cerca</button>
+    <button id="btn-modifiche">Modifiche</button>
+    <span class="q mono" id="chi-sono"></span>
+  </span>
+</header>
+
+<main id="tela"><p class="q">Carico il registro…</p></main>
+
+<script>
+"use strict";
+
+/* ==========================================================================
+   0. Caricamento del registro.
+   Il dato sta in dati.json, separato dalla presentazione. L'artefatto di
+   distribuzione (campo.html) inietta lo stesso JSON in window.DATI.
+   ========================================================================== */
+const OGGI = "2026-08-13";
+let D = null, PATCH = null, IO = null;
+
+const LS_PATCH = "campo.patch.v3";
+const LS_IO    = "campo.autore.v3";
+const LS_STORIA= "campo.storia.v3";
+
+function avvia(dati){
+  D = dati;
+  PATCH = leggi(LS_PATCH, {modifiche:[]});
+  IO = localStorage.getItem(LS_IO) || "";
+  applica();
+  document.getElementById("chi-sono").textContent = IO ? IO : "";
+  window.addEventListener("hashchange", disegna);
+  legaTasti();
+  disegna();
+}
+
+function leggi(k, dflt){ try{ return JSON.parse(localStorage.getItem(k)) || dflt; }catch(e){ return dflt; } }
+function scrivi(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+/*INNESTO-DATI*/
+/* Nell'artefatto di distribuzione i dati sono gia qui e la partenza sarebbe
+   sincrona, prima che il resto dello script sia stato valutato: si rimanda di
+   un giro, cosi le due strade partono nello stesso stato. */
+if (window.DATI) { queueMicrotask(function(){ avvia(window.DATI); }); }
+else {
+  fetch("dati.json").then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+   .then(avvia)
+   .catch(e=>{
+     document.getElementById("tela").innerHTML =
+      '<div class="avviso">Non riesco a leggere <span class="mono">dati.json</span>.</div>' +
+      '<p>Aprendo <span class="mono">index.html</span> con un doppio clic il browser blocca la lettura del file ' +
+      'accanto. Due modi per lavorare:</p><ul>' +
+      '<li>per distribuire: <span class="mono">python3 costruisci.py</span>, che genera ' +
+      '<span class="mono">campo.html</span>, file unico che si apre con un doppio clic;</li>' +
+      '<li>per sviluppare: <span class="mono">python3 -m http.server</span> in questa cartella, poi ' +
+      '<span class="mono">http://localhost:8000/</span>.</li></ul>' +
+      '<p class="q mono">' + e.message + '</p>';
+   });
+}
+
+/* --------------------------------------------------------------- patch
+   Le modifiche vivono nello spazio locale del browser e si esportano come
+   patch JSON. Nessuna ricompilazione. */
+function applica(){
+  for (const m of PATCH.modifiche){
+    if (m.tipo === "giudizio"){
+      const g = D.giudizi.find(x=>x.id===m.id);
+      if (g){ g[m.campo]=m.a; g.autore=m.autore; g.data=m.data; g.motivazione=m.motivazione; g._mod=true; }
+    } else if (m.tipo === "operatore"){
+      const o = D.operatori.find(x=>x.slug===m.slug);
+      if (o){ o[m.campo]=m.a; o._mod=true;
+              if (m.campo==="ultima_verifica"){ o.verificato_da=m.autore; } }
+    }
+  }
+}
+
+function registra(mod){
+  if (!IO){
+    const n = prompt("Chi sei? Il nome resta sulle modifiche che fai.\n(" + D.persone.join(" · ") + ")");
+    if (!n) return false;
+    IO = n.trim(); localStorage.setItem(LS_IO, IO);
+    document.getElementById("chi-sono").textContent = IO;
+  }
+  mod.autore = IO; mod.data = OGGI;
+  PATCH.modifiche.push(mod); scrivi(LS_PATCH, PATCH);
+  applica(); disegna();
+  return true;
+}
+
+/* ==========================================================================
+   1. Stato — tutto nell'URL. Un solo insieme di filtri per l'applicazione.
+   ========================================================================== */
+const VUOTO = { vista:"oggi", taglio:"servizio", slug:"", ctx:"",
+                arena:[], linea:[], seg:[], stato:[], marc:"", buchi:false, q:"", sel:[] };
+
+function stato(){
+  const h = location.hash.replace(/^#\/?/, "");
+  const [rotta, cerca] = h.split("?");
+  const p = new URLSearchParams(cerca || "");
+  const pezzi = (rotta || "oggi").split("/");
+  const s = Object.assign({}, VUOTO);
+  s.vista = pezzi[0] || "oggi";
+  if (s.vista === "chi") s.slug = pezzi[1] || "";
+  s.taglio = p.get("taglio") || "servizio";
+  s.ctx    = p.get("ctx") || "";
+  for (const k of ["arena","linea","seg","stato","sel"]) s[k] = (p.get(k)||"").split(",").filter(Boolean);
+  s.marc = p.get("marc") || "";
+  s.buchi = p.get("buchi") === "1";
+  s.q = p.get("q") || "";
+  return s;
+}
+
+function url(mod){
+  const s = Object.assign(stato(), mod || {});
+  const p = new URLSearchParams();
+  if (s.vista === "campo" && s.taglio !== "servizio") p.set("taglio", s.taglio);
+  if (s.vista === "brief" && s.ctx) p.set("ctx", s.ctx);
+  for (const k of ["arena","linea","seg","stato","sel"]) if (s[k].length) p.set(k, s[k].join(","));
+  if (s.marc) p.set("marc", s.marc);
+  if (s.buchi) p.set("buchi", "1");
+  if (s.q) p.set("q", s.q);
+  const q = p.toString();
+  const r = s.vista === "chi" ? "chi/" + s.slug : s.vista;
+  return "#/" + r + (q ? "?" + q : "");
+}
+function vai(mod){ location.hash = url(mod); }
+function alterna(chiave, valore){
+  const s = stato(); const a = s[chiave].slice();
+  const i = a.indexOf(valore);
+  if (i >= 0) a.splice(i,1); else a.push(valore);
+  vai({[chiave]: a});
+}
+
+/* ==========================================================================
+   2. Interrogazione — nessun numero derivato e salvato: si ricalcola sempre.
+   ========================================================================== */
+const per = (a, k) => a.reduce((m,x)=>((m[x[k]]=m[x[k]]||[]).push(x),m), {});
+let _idx = null;
+function idx(){
+  if (_idx) return _idx;
+  _idx = {
+    op: Object.fromEntries(D.operatori.map(o=>[o.slug,o])),
+    sv: per(D.servizi,"operatore"),
+    cp: Object.fromEntries(D.competenze.map(c=>[c.operatore,c])),
+    fr: Object.fromEntries(D.firme.map(f=>[f.operatore,f])),
+    gd: per(D.giudizi,"operatore"),
+    sg: per(D.segnali,"soggetto"),
+  };
+  return _idx;
+}
+const servizi   = s => idx().sv[s] || [];
+const giudizi   = s => idx().gd[s] || [];
+const giudizio  = (s,c) => giudizi(s).find(g=>g.campo===c);
+const segnali   = s => idx().sg[s] || [];
+const op        = s => idx().op[s];
+const et        = (gruppo, k) => (D.enum[gruppo] && D.enum[gruppo][k]) || k;
+const br        = (gruppo, k) => (D.enum_breve[gruppo] && D.enum_breve[gruppo][k]) || et(gruppo, k);
+const incOp     = s => D.incertezze.filter(i=>i.operatore===s && i.stato==="aperta");
+
+function giorni(d){ if(!d) return null; return Math.round((new Date(OGGI)-new Date(d))/864e5); }
+function stantia(o){
+  if (!o.ultima_verifica) return true;
+  return giorni(o.ultima_verifica) > D.soglia_staleness_giorni;
+}
+function esc(t){ return String(t==null?"":t).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function mk(m){ return m ? '<span class="mk mk-'+m+'" title="'+esc(et("marcatura",m))+'">'+m+'</span>' : ""; }
+function dt(d){ if(!d) return "—"; const [a,m,g]=d.split("-"); return g+"/"+m+"/"+a; }
+
+/* filtro condiviso: vale per ogni taglio, non si azzera cambiando taglio */
+function filtrati(){
+  const s = stato();
+  return D.operatori.filter(o=>{
+    if (s.arena.length && !s.arena.includes(o.arena)) return false;
+    if (s.stato.length ? !s.stato.includes(o.stato) : o.stato === "archiviato") return false;
+    if (s.seg.length   && !s.seg.some(x=>o.segmenti.includes(x))) return false;
+    if (s.linea.length && !servizi(o.slug).some(v=>s.linea.includes(v.linea))) return false;
+    if (s.marc) {
+      const ord = {V:3,D:2,S:1,N:0};
+      if (!servizi(o.slug).some(v=>ord[v.marcatura] >= ord[s.marc])) return false;
+    }
+    if (s.q){
+      const t = s.q.toLowerCase();
+      const fieno = [o.nome,o.nota,o.sede,o.forma_giuridica,o.economia_nota]
+        .concat(servizi(o.slug).map(v=>v.nome_proprio+" "+v.consegna+" "+v.prova))
+        .concat(giudizi(o.slug).map(g=>g.valore+" "+g.motivazione)).join(" ").toLowerCase();
+      if (!fieno.includes(t)) return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    const pa = +((giudizio(a.slug,"punteggio")||{}).valore || 0);
+    const pb = +((giudizio(b.slug,"punteggio")||{}).valore || 0);
+    return pb - pa || a.nome.localeCompare(b.nome);
+  });
+}
+
+/* --------- le letture: regole dichiarate nel dato, numeri ricalcolati qui */
+function calcolaLettura(regola){
+  const attivi = D.operatori.filter(o=>o.stato!=="archiviato");
+  const conCat = attivi.filter(o=>servizi(o.slug).length);
+  if (regola === "prezzo-esposto"){
+    const c = conCat.filter(o=>servizi(o.slug).some(v=>v.linea!=="fuori" && v.prezzo_natura==="listino"));
+    const q = conCat.filter(o=>servizi(o.slug).some(v=>v.prezzo_natura==="listino"));
+    return {n:c.length, su:conCat.length, chi:c.map(o=>o.slug),
+            testo:"operatori con almeno un prezzo a listino su un servizio delle nostre quattro linee, su "+conCat.length+
+                  " con catalogo. Contando anche i servizi fuori dalle nostre linee (abbonamenti, biglietti) diventano "+q.length+
+                  ". La dotazione di un programma e l'importo di un'aggiudicazione non contano: non sono cio che il cliente legge prima di trattare"};
+  }
+  if (regola === "chi-rischia"){
+    const c = attivi.filter(o=>o.chi_rischia==="condiviso"||o.chi_rischia==="fornitore");
+    const ign = attivi.filter(o=>o.chi_rischia==="non-noto");
+    return {n:c.length, su:attivi.length, chi:c.map(o=>o.slug),
+            testo:"operatori in cui una parte del compenso e davvero a rischio, o che mettono capitale proprio, su "+attivi.length+
+                  " attivi. L'equity di portafoglio in aggiunta alla fee non conta: il rischio e aggiuntivo, non sostitutivo, "+
+                  "e la fee di gestione si incassa comunque. Altri "+ign.length+" dichiarano un allineamento senza pubblicare il meccanismo: non sono contabili"};
+  }
+  /* I riferimenti di modello esteri non contendono commesse: restano fuori dai
+     conteggi di gara, e il testo lo dichiara. */
+  const inGara = attivi.filter(o=>o.arena!=="riferimento");
+  if (regola === "linea-ma"){
+    const dich = inGara.filter(o=>servizi(o.slug).some(v=>v.linea==="ma"));
+    const prov = dich.filter(o=>servizi(o.slug).some(v=>v.linea==="ma" && v.prova && v.marcatura!=="N"));
+    return {n:prov.length, su:dich.length, chi:prov.map(o=>o.slug),
+            testo:"operatori con una prova su un servizio della nostra quarta linea, su "+dich.length+
+                  " che dichiarano qualcosa su quella linea. Gli altri la elencano a catalogo senza un mandato documentato. "+
+                  "E dei due con prova, uno solo e buy-side in senso proprio: l'altro e value creation dopo l'acquisizione"};
+  }
+  if (regola === "vb-con-prova"){
+    const dich = inGara.filter(o=>servizi(o.slug).some(v=>v.linea==="vb" && v.tipo==="venture-building"));
+    const prov = dich.filter(o=>servizi(o.slug).some(v=>
+      v.linea==="vb" && v.tipo==="venture-building" && v.prova && v.marcatura!=="N"));
+    return {n:prov.length, su:dich.length, chi:prov.map(o=>o.slug),
+            testo:"operatori con venture building su commissione e almeno una prova nominata, su "+dich.length+
+                  " che lo dichiarano. Riferimenti di modello esteri esclusi: non contendono commesse"};
+  }
+  if (regola === "copertura-servizi"){
+    return {n:conCat.length, su:attivi.length, chi:[],
+            testo:"operatori attivi con almeno una riga di catalogo servizi, su "+attivi.length};
+  }
+  return {n:0, su:0, chi:[], testo:""};
+}
+
+/* ==========================================================================
+   3. Disegno
+   ========================================================================== */
+const VISTE = [["oggi","Oggi"],["campo","Il campo"],["chi","Chi"],["brief","Brief"]];
+
+function disegna(){
+  const s = stato();
+  document.getElementById("nav").innerHTML = VISTE.map(([v,n])=>{
+    const attiva = v===s.vista ? ' aria-current="page"' : "";
+    const h = v==="chi" ? (s.slug ? url({vista:"chi"}) : url({vista:"chi", slug:ultimoVisto()||"gellify"}))
+                        : url({vista:v});
+    return '<a href="'+h+'"'+attiva+'>'+n+'</a>';
+  }).join("");
+  const t = document.getElementById("tela");
+  if (s.vista === "campo") t.innerHTML = vistaCampo(s);
+  else if (s.vista === "chi") { ricorda(s.slug); t.innerHTML = vistaChi(s); }
+  else if (s.vista === "brief") t.innerHTML = vistaBrief(s);
+  else t.innerHTML = vistaOggi(s);
+  lega();
+  window.scrollTo(0,0);
+}
+
+function ricorda(slug){
+  if (!slug) return;
+  let st = leggi(LS_STORIA, []);
+  st = [slug].concat(st.filter(x=>x!==slug)).slice(0,5);
+  scrivi(LS_STORIA, st);
+}
+function storia(){ return leggi(LS_STORIA, []); }
+function ultimoVisto(){ return storia()[0] || ""; }
+
+/* -------------------------------------------------------------- A · Oggi */
+function vistaOggi(){
+  const attivi = D.operatori.filter(o=>o.stato!=="archiviato");
+  const recenti = D.segnali.filter(g=>g.data<=OGGI && giorni(g.data)<=30).sort((a,b)=>b.data.localeCompare(a.data));
+  const finestre = D.segnali.filter(g=>g.data>OGGI).sort((a,b)=>a.data.localeCompare(b.data));
+  const mai = attivi.filter(o=>!o.ultima_verifica);
+  const vecchi = attivi.filter(o=>o.ultima_verifica && giorni(o.ultima_verifica)>D.soglia_staleness_giorni)
+                       .sort((a,b)=>a.ultima_verifica.localeCompare(b.ultima_verifica));
+  const ordCosto = {alto:0,medio:1,basso:2};
+  const inc = D.incertezze.filter(i=>i.stato==="aperta")
+              .sort((a,b)=>ordCosto[a.costo_stimato]-ordCosto[b.costo_stimato] || a.ore_stimate-b.ore_stimate);
+
+  let h = '<h1>Che cosa è cambiato, e che cosa manca</h1>';
+  h += '<p class="q">Coda di lavoro al '+dt(OGGI)+'. Registro versione '+D.versione+', tornata del '+dt(D.tornata)+'. '+
+       'Non è un riassunto: ogni blocco chiude con qualcosa da fare.</p>';
+
+  /* segnali */
+  h += '<div class="sezione"><h3>Segnali degli ultimi 30 giorni — '+recenti.length+'</h3>';
+  h += recenti.length ? '<div class="avvolgi" style="max-height:none"><table><tbody>' + recenti.map(g=>
+      '<tr><td class="mono" style="width:80px">'+dt(g.data)+'</td>'+
+      '<td style="width:180px">'+(op(g.soggetto)?'<a href="'+url({vista:"chi",slug:g.soggetto})+'">'+esc(op(g.soggetto).nome)+'</a>':'<span class="q">'+esc(g.soggetto)+'</span>')+'</td>'+
+      '<td class="q" style="width:110px">'+esc(et("tipo_segnale",g.tipo))+'</td>'+
+      '<td>'+esc(g.testo)+' '+mk(g.marcatura)+(g.fonte_url?' <a class="mono" href="'+esc(g.fonte_url)+'" target="_blank" rel="noopener">fonte</a>':'')+'</td></tr>'
+    ).join("") + '</tbody></table></div>'
+    : '<p class="buco" style="padding:6px 8px">Nessun segnale datato negli ultimi 30 giorni. Se resta vuoto, il registro non ha un motivo per essere riaperto: è il campo da alimentare per primo.</p>';
+
+  if (finestre.length){
+    h += '<h3 style="margin-top:12px">Finestre datate in avanti — '+finestre.length+'</h3><ul>' +
+      finestre.map(g=>'<li><span class="mono">'+dt(g.data)+'</span> — '+
+        (op(g.soggetto)?'<a href="'+url({vista:"chi",slug:g.soggetto})+'">'+esc(op(g.soggetto).nome)+'</a>: ':'')+
+        esc(g.testo)+'</li>').join("") + '</ul>';
+  }
+  h += '</div>';
+
+  /* staleness */
+  h += '<div class="sezione"><h3>Righe che chiedono una verifica — '+(mai.length+vecchi.length)+'</h3>';
+  if (mai.length){
+    h += '<p><span class="pallino"></span> <b>'+mai.length+' operatori attivi non hanno mai avuto una lettura diretta riuscita.</b> '+
+         'Non sono vecchi: non sono mai stati verificati. Ogni loro riga poggia su un censimento o su una fonte indiretta.</p>';
+    h += '<div class="lat">'+mai.map(o=>'<a class="buco" href="'+url({vista:"chi",slug:o.slug})+'">'+esc(o.nome)+'</a>').join("")+'</div>';
+  }
+  if (vecchi.length){
+    h += '<p style="margin-top:8px"><b>'+vecchi.length+' righe oltre i '+D.soglia_staleness_giorni+' giorni.</b></p><div class="lat">'+
+      vecchi.map(o=>'<a href="'+url({vista:"chi",slug:o.slug})+'">'+esc(o.nome)+' <span class="q mono">'+giorni(o.ultima_verifica)+'g</span></a>').join("")+'</div>';
+  } else {
+    const prox = attivi.filter(o=>o.ultima_verifica).map(o=>giorni(o.ultima_verifica)).sort((a,b)=>b-a)[0];
+    h += '<p style="margin-top:8px">Nessuna riga verificata è ancora oltre soglia: la più vecchia ha <b>'+prox+' giorni</b>, '+
+         'la prima scadenza cade il <span class="mono">09/11/2026</span>. '+
+         '<span class="q">Il registro è stato verificato tutto lo stesso giorno e scadrà tutto lo stesso giorno: le verifiche vanno scaglionate.</span></p>';
+  }
+  h += '</div>';
+
+  /* incertezze */
+  h += '<div class="sezione"><h3>Incertezze aperte, per costo della non-conoscenza — '+inc.length+'</h3>';
+  h += '<div class="avvolgi" style="max-height:none"><table><thead><tr><th style="width:64px">Costo</th><th style="width:52px">Ore</th>'+
+       '<th>Che cosa non sappiamo</th><th style="width:34%">Perché conta</th><th style="width:26%">Che cosa la chiude</th></tr></thead><tbody>';
+  h += inc.map(i=>'<tr><td class="'+(i.costo_stimato==="alto"?"buco":"")+'"><b>'+esc(i.costo_stimato)+'</b></td>'+
+      '<td class="mono">'+i.ore_stimate+'</td>'+
+      '<td><b class="mono">'+esc(i.id)+'</b> '+esc(i.cosa)+
+        (i.operatore?' <a href="'+url({vista:"chi",slug:i.operatore})+'">'+esc(op(i.operatore).nome)+'</a>':'')+'</td>'+
+      '<td>'+esc(i.perche_conta)+'</td><td class="q">'+esc(i.fonte_che_la_chiude)+'</td></tr>').join("");
+  h += '</tbody></table></div></div>';
+
+  /* letture */
+  h += '<div class="sezione"><h3>Le letture che cambiano una decisione — '+D.letture.length+'</h3>'+
+       '<p class="q">Ogni numero è ricalcolato adesso dal registro. Correggi una riga in <b>Chi</b> e questi numeri cambiano da soli.</p>';
+  for (const l of D.letture){
+    const c = calcolaLettura(l.regola);
+    const grave = (l.regola!=="copertura-servizi") ? c.n <= 4 : c.n/c.su < .6;
+    h += '<div class="giud"><div class="capo"><span class="val" style="font-size:var(--g)" '+
+         (grave?'':'')+'>'+c.n+'</span><span class="q">/ '+c.su+'</span>'+
+         '<b>'+esc(l.domanda)+'</b></div>'+
+         '<p class="meta">'+esc(c.testo)+'</p>'+
+         (c.chi.length ? '<div class="lat">'+c.chi.slice(0,12).map(s=>'<a href="'+url({vista:"chi",slug:s})+'">'+esc(op(s).nome)+'</a>').join("")+'</div>' : '')+
+         '<p style="margin-top:6px"><b>E quindi.</b> '+esc(l.e_quindi)+'</p>'+
+         '<p class="meta"><b>Che cosa la falsificherebbe.</b> '+esc(l.falsifica)+'</p></div>';
+  }
+  h += '</div>';
+
+  /* La prossima azione — una sola, con il nome di chi la fa.
+     Regola dichiarata: fra le incertezze a costo alto, la meno costosa da chiudere. */
+  const prima = inc[0];
+  h += '<div class="riga-quindi"><b>La prossima azione.</b><span>'+
+       (prima ? '<b>'+esc(prima.responsabile)+'</b> — <b class="mono">'+esc(prima.id)+'</b>: '+
+                esc(prima.fonte_che_la_chiude)+' <span class="q">('+prima.ore_stimate+
+                (prima.ore_stimate===1?' ora stimata':' ore stimate')+
+                '. È la meno costosa fra quelle a costo alto: chiuderla per prima libera più decisioni per ora spesa.)</span>'
+              : 'nessuna incertezza aperta')+
+       '</span></div>';
+  return h;
+}
+
+/* ------------------------------------------------------------ B · Il campo */
+const TAGLI = [["servizio","per servizio"],["competenza","per competenza"],["prezzo","per prezzo"],
+               ["segmento","per segmento"],["posizionamento","per posizionamento"]];
+
+function barra(s){
+  const gr = (etichetta, chiave, voci) =>
+    '<div class="gruppo"><span>'+etichetta+'</span>'+voci.map(([v,n])=>
+      '<button data-alterna="'+chiave+'" data-val="'+v+'" class="'+(s[chiave].includes(v)?"on":"")+'">'+esc(n)+'</button>').join("")+'</div>';
+  let h = '<div id="barra" class="no-stampa">';
+  h += '<div class="gruppo"><span>taglio</span>'+TAGLI.map(([v,n])=>
+        '<button data-taglio="'+v+'" class="'+(s.taglio===v?"on":"")+'">'+esc(n)+'</button>').join("")+'</div>';
+  h += gr("arena","arena", Object.keys(D.enum.arena).map(k=>[k,br("arena",k)]));
+  h += gr("linea","linea", Object.keys(D.enum.linea).filter(k=>k!=="fuori").map(k=>[k,br("linea",k)]));
+  h += gr("segmento","seg", Object.keys(D.enum.segmento).map(k=>[k,br("segmento",k)]));
+  h += gr("stato","stato", Object.keys(D.enum.stato).map(k=>[k,k.replace("_"," ")]));
+  h += '<div class="gruppo"><span>marcatura min.</span>'+
+       ["","S","D","V"].map(m=>'<button data-marc="'+m+'" class="'+(s.marc===m?"on":"")+'">'+(m||"tutte")+'</button>').join("")+'</div>';
+  h += '<div class="gruppo"><button data-buchi="1" class="'+(s.buchi?"on":"")+'">solo righe con buchi</button></div>';
+  h += '<div class="gruppo"><input id="q" placeholder="filtra…" value="'+esc(s.q)+'" size="14"></div>';
+  h += '<div class="gruppo"><button id="azzera">azzera</button>'+
+       (s.sel.length?' <button data-sel-vuota="1">deseleziona '+s.sel.length+'</button>':'')+'</div>';
+  h += '</div>';
+  return h;
+}
+
+/* [chiave, etichetta breve per la colonna, definizione estesa per il suggerimento] */
+function colonne(taglio){
+  if (taglio==="servizio")   return Object.keys(D.enum.tipo).map(k=>[k, br("tipo",k), et("tipo",k)]);
+  if (taglio==="prezzo")     return [["prezzo","prezzo pubblico","Almeno un servizio delle nostre quattro linee con prezzo esposto"],
+                                     ["rischio","chi rischia","Chi si assume il rischio economico dell'esito"],
+                                     ["durata","durata dichiarata","Almeno un servizio con durata dichiarata"]]
+                               .concat(Object.keys(D.enum.modello_ricavo).map(k=>[k, br("modello_ricavo",k), et("modello_ricavo",k)]));
+  if (taglio==="segmento")   return Object.keys(D.enum.segmento).map(k=>[k, br("segmento",k), et("segmento",k)]);
+  if (taglio==="competenza") return [["capacita_tecnica","capacità tecnica",D.scale.capacita_tecnica.domanda],
+                                     ["esecuzione_interna","esecuzione interna",D.scale.esecuzione_interna.domanda],
+                                     ["headcount","organico","Organico noto, con la sua marcatura"],
+                                     ["stack","stack","Tecnologie nominate"],["deploy","deploy","Dove gira: cloud, UE, on-premise"],
+                                     ["asset","asset propri","Prodotti o piattaforme proprietarie nominate"]]
+                               .concat(Object.keys(D.enum.composizione).map(k=>[k, br("composizione",k), et("composizione",k)]));
+  return [["payoff","payoff","La frase breve che accompagna il logo, letterale"],
+          ["territorio","territorio","Il territorio di posizionamento occupato"],
+          ["categoria","si definisce","La categoria che si auto-attribuiscono"]];
+}
+
+/* Una cella è un BUCO quando non abbiamo il fatto: nessuna riga, oppure la
+   sola riga che abbiamo è marcata N. Una cella vuota su un operatore che ha
+   catalogo significa invece «non risulta a catalogo»: è un fatto, non un buco. */
+function cella(o, taglio, k){
+  const sv = servizi(o.slug), cp = idx().cp[o.slug], fr = idx().fr[o.slug];
+  const senzaCat = sv.length === 0;
+  if (taglio === "servizio"){
+    const q = sv.filter(v=>v.tipo===k);
+    if (!q.length) return senzaCat ? {b:true, t:"?"} : {t:"", q:true};
+    const noti = q.filter(v=>v.marcatura!=="N");
+    if (!noti.length) return {b:true, t:"N"};
+    const ord={V:3,D:2,S:1,N:0}; const best = noti.reduce((a,b)=>ord[b.marcatura]>ord[a.marcatura]?b:a);
+    return {t:(noti.length>1?noti.length+" ":"")+best.marcatura, piena:true, mk:best.marcatura};
+  }
+  if (taglio === "segmento"){
+    if (!o.segmenti.length) return {b:true, t:"?"};
+    return o.segmenti.includes(k) ? {t:o.segmenti_marcatura, piena:true, mk:o.segmenti_marcatura} : {t:"", q:true};
+  }
+  if (taglio === "prezzo"){
+    if (k === "prezzo"){
+      const lis = sv.filter(v=>v.prezzo_natura==="listino");
+      const nostre = lis.filter(v=>v.linea!=="fuori");
+      if (nostre.length) return {t:String(nostre.length), piena:true,
+        titolo:nostre.map(v=>v.nome_proprio+": "+v.prezzo).join(" · ")};
+      if (lis.length) return {t:"fuori", q:true,
+        titolo:"A listino, ma fuori dalle nostre linee — "+lis.map(v=>v.nome_proprio+": "+v.prezzo).join(" · ")};
+      const altri = sv.filter(v=>v.prezzo_natura==="aggiudicazione"||v.prezzo_natura==="dotazione");
+      if (altri.length) return {t:"—", q:true,
+        titolo:"Nessun listino. Importi noti ma di altra natura: "+altri.map(v=>br("prezzo_natura",v.prezzo_natura)+" "+v.prezzo).join(" · ")};
+      return {b:true, t:"N", titolo:"Nessun prezzo pubblico su nessun servizio"};
+    }
+    if (k === "rischio") return o.chi_rischia==="non-noto" ? {b:true,t:"?"} :
+      {t:{cliente:"cli",condiviso:"CON",fornitore:"FOR"}[o.chi_rischia], piena:o.chi_rischia!=="cliente", titolo:et("chi_rischia",o.chi_rischia)};
+    if (k === "durata"){
+      const d = sv.filter(v=>v.durata && v.durata!=="non dichiarata");
+      return d.length ? {t:String(d.length), piena:true, titolo:d.map(v=>v.nome_proprio+": "+v.durata).join(" · ")} : {b:true, t:"N"};
+    }
+    if (!o.modello_ricavo.length) return {b:true, t:"?"};
+    return o.modello_ricavo.includes(k) ? {t:"•", piena:true} : {t:"", q:true};
+  }
+  if (taglio === "competenza"){
+    if (!cp) return {b:true, t:"?", titolo:"Nessun profilo di competenza"};
+    if (k==="capacita_tecnica" || k==="esecuzione_interna"){
+      const v = cp[k];
+      if (v==null) return {b:true, t:"?", titolo:"Gradino non determinato"};
+      return {t:"■".repeat(v)+"□".repeat(3-v), piena:true, scala:true,
+              titolo:D.scale[k].titolo+" "+v+"/3 — "+D.scale[k].gradini[String(v)]};
+    }
+    if (k==="headcount") return (cp.headcount_marcatura==="N") ? {b:true,t:"N",titolo:cp.headcount}
+                                : {t:cp.headcount_marcatura, piena:true, mk:cp.headcount_marcatura, titolo:cp.headcount};
+    if (k==="stack")  return cp.stack.length ? {t:String(cp.stack.length), piena:true, titolo:cp.stack.join(" · ")} : {b:true,t:"N"};
+    if (k==="deploy") return cp.deploy.length ? {t:String(cp.deploy.length), piena:true, titolo:cp.deploy.join(" · ")} : {b:true,t:"N"};
+    if (k==="asset")  return cp.asset_proprietari.length ? {t:String(cp.asset_proprietari.length), piena:true, titolo:cp.asset_proprietari.join(" · ")} : {b:true,t:"N"};
+    return cp.composizione.includes(k) ? {t:"•", piena:true} : {t:"", q:true};
+  }
+  /* posizionamento */
+  if (!fr) return {b:true, t:"?", titolo:"Firma verbale non rilevata"};
+  if (k==="payoff")     return fr.payoff ? {t:"sì", piena:true, titolo:fr.payoff} : {b:true, t:"N", titolo:"Nessun payoff: usa l'H1 per dire chi lo possiede, non che cosa promette"};
+  if (k==="territorio") return {t:et("territorio",fr.territorio).slice(0,10), piena:true, titolo:et("territorio",fr.territorio)};
+  return fr.categoria_autoattribuita ? {t:"sì", piena:true, titolo:fr.categoria_autoattribuita} : {b:true, t:"N"};
+}
+
+function vistaCampo(s){
+  let ops = filtrati();
+  const cols = colonne(s.taglio);
+  const buchiDi = o => cols.filter(([k])=>cella(o,s.taglio,k).b).length;
+  if (s.buchi) ops = ops.filter(o=>buchiDi(o)>0);
+
+  /* copertura per colonna e buchi, ricalcolati adesso: nessun numero e salvato */
+  const cop = cols.map(([k])=>ops.filter(o=>cella(o,s.taglio,k).piena).length);
+  const libero = cop.map(n=>n < 3);
+  const nBuchi = ops.reduce((a,o)=>a+cols.filter(([k])=>cella(o,s.taglio,k).b).length,0);
+  const senza = ops.filter(o=>!servizi(o.slug).length).length;
+
+  let h = '<h1>Il campo — '+esc(TAGLI.find(t=>t[0]===s.taglio)[1])+'</h1>';
+  h += '<p class="q">'+ops.length+' operatori su '+D.operatori.length+' nel registro.</p>';
+  h += barra(s);
+  h += '<p style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin:0 0 8px">'+
+       '<span class="conto-buchi">'+nBuchi+'</span>'+
+       '<span style="max-width:74ch">celle senza il fatto, su '+(ops.length*cols.length)+'. '+
+       '<b class="buco">Il rosso segnala una cosa sola: dove non sappiamo.</b> '+
+       'Cella bianca su un operatore con catalogo vuol dire «non risulta a catalogo», ed è un fatto. '+
+       'Riga con il nome in rosso: nessun catalogo. Colonna sottolineata: meno di tre presidi, territorio contendibile.</span></p>';
+
+  h += '<div class="avvolgi"><table><thead><tr><th class="nome">Operatore <span class="q">·  punt.  ·  arena</span></th>';
+  cols.forEach(([k,n,lungo],i)=>{
+    h += '<th class="cella '+(libero[i]?"libero":"")+'" title="'+esc(lungo||n)+'">'+
+         '<span class="vert">'+esc(n)+'</span><br><span class="mono">'+cop[i]+'</span></th>';
+  });
+  h += '</tr></thead><tbody>';
+  for (const o of ops){
+    const sv = servizi(o.slug);
+    const p = (giudizio(o.slug,"punteggio")||{}).valore || "";
+    const sel = s.sel.includes(o.slug);
+    h += '<tr class="'+(sv.length?"":"senza-catalogo")+' '+(sel?"scelta":"")+'">';
+    h += '<td class="nome"><input type="checkbox" data-sel="'+o.slug+'" '+(sel?"checked":"")+
+         '> <a href="'+url({vista:"chi",slug:o.slug})+'">'+esc(o.nome)+'</a> '+
+         '<span class="q mono">'+esc(p)+'</span> <span class="q">'+esc(o.arena)+'</span>'+
+         (o.stato==="da_verificare"?' <span class="mk mk-N" title="nessuna lettura diretta riuscita">?</span>':'')+
+         (sv.length?'':' <b class="buco">nessun catalogo</b>')+'</td>';
+    for (const [k] of cols){
+      const c = cella(o,s.taglio,k);
+      h += '<td class="cella '+(c.b?"buco":"")+' '+(c.piena?"piena":"")+' '+(c.q?"vuota":"")+'"'+
+           (c.titolo?' title="'+esc(c.titolo)+'"':"")+'>'+esc(c.t||"")+'</td>';
+    }
+    h += '</tr>';
+  }
+  h += '</tbody></table></div>';
+
+  /* confronto: è uno stato di B, non una tab */
+  if (s.sel.length >= 2) h += confronto(s.sel, s.taglio);
+
+  /* la riga di «e quindi», calcolata sul taglio corrente */
+  const liberi = cols.filter((c,i)=>libero[i]).map(c=>c[1]);
+  h += '<div class="riga-quindi"><b>E quindi.</b><span>'+
+    (senza ? '<b>'+senza+' righe non hanno catalogo</b>: sono operatori su cui non si può decidere nulla. ' : '')+
+    (liberi.length ? 'Sotto i tre presidi: <b>'+esc(liberi.join(" · "))+'</b>. ' : 'Nessuna colonna sotto i tre presidi in questa selezione. ')+
+    '<a href="'+url({buchi:!s.buchi})+'">'+(s.buchi?'Mostra tutte le righe':'Mostra solo le righe con buchi')+'</a> · '+
+    '<a href="'+url({vista:"brief", ctx:contestoDaFiltri(s)})+'">Genera il brief di questa selezione</a>'+
+    '</span></div>';
+
+  /* legenda: le colonne hanno un'etichetta breve, la definizione sta qui */
+  h += '<div class="sezione no-stampa"><h3>Che cosa misura ogni colonna</h3><dl class="campi">'+
+    cols.map(([k,n,lungo])=>'<dt>'+esc(n)+'</dt><dd class="q">'+esc(lungo||n)+'</dd>').join("")+'</dl></div>';
+  return h;
+}
+
+function contestoDaFiltri(s){
+  if (s.sel.length===1) return "operatore:"+s.sel[0];
+  if (s.linea.length===1) return "linea:"+s.linea[0];
+  if (s.seg.length===1)   return "segmento:"+s.seg[0];
+  if (s.arena.length===1) return "arena:"+s.arena[0];
+  return "";
+}
+
+function confronto(sel, taglio){
+  const cols = colonne(taglio);
+  let h = '<div class="sezione"><h3>Confronto — '+sel.length+' operatori</h3><div class="avvolgi" style="max-height:none"><table><thead><tr><th class="nome"></th>';
+  h += sel.map(sg=>'<th>'+esc(op(sg)?op(sg).nome:sg)+'</th>').join("")+'</tr></thead><tbody>';
+  for (const [k,n,lungo] of cols){
+    const celle = sel.map(sg=>op(sg) ? cella(op(sg),taglio,k) : {q:true});
+    if (celle.every(c=>c.q && !c.b)) continue;
+    h += '<tr><td class="nome" title="'+esc(lungo||n)+'">'+esc(n)+'</td>'+celle.map(c=>
+      '<td class="'+(c.b?"buco":"")+'"'+(c.titolo?' title="'+esc(c.titolo)+'"':"")+'>'+esc(c.titolo||c.t||"—")+'</td>').join("")+'</tr>';
+  }
+  h += '</tbody></table></div></div>';
+  return h;
+}
+
+/* ---------------------------------------------------------------- C · Chi */
+function vistaChi(s){
+  const o = op(s.slug);
+  if (!o) return '<div class="avviso">Operatore non trovato: '+esc(s.slug)+'</div>'+
+    '<p><a href="'+url({vista:"campo"})+'">Torna al campo</a></p>';
+  const sv = servizi(o.slug), cp = idx().cp[o.slug], fr = idx().fr[o.slug];
+  const gd = giudizi(o.slug), sg = segnali(o.slug), inc = incOp(o.slug);
+
+  let h = '<div class="scheda-testa"><h1>'+esc(o.nome)+'</h1>';
+  h += '<p class="q">'+esc(et("arena",o.arena))+' · '+esc(o.sede)+' ('+esc(o.paese)+')'+
+       (o.anno?' · dal '+o.anno:'')+' · '+esc(o.forma_giuridica)+
+       (o.sito?' · <a href="'+esc(o.sito)+'" target="_blank" rel="noopener">'+esc(o.sito.replace(/^https?:\/\//,""))+'</a>':'')+'</p>';
+  if (o.stato==="archiviato") h += '<p class="avviso">Archiviato. '+esc(o.motivo_archivio)+'</p>';
+  if (o.stato==="da_verificare") h += '<p class="avviso">Da verificare: nessuna lettura diretta riuscita. Ogni riga qui sotto poggia su fonte indiretta.</p>';
+  if (!sv.length) h += '<p class="avviso">Nessun catalogo servizi. Su questo operatore non si può decidere nulla.</p>';
+  h += '<p>'+esc(o.nota)+'</p></div>';
+
+  /* verifica */
+  h += '<div class="sezione"><h3>Verifica</h3><dl class="campi">'+
+    '<dt>Ultima verifica</dt><dd>'+(o.ultima_verifica ? dt(o.ultima_verifica)+' <span class="q">('+giorni(o.ultima_verifica)+' giorni'+
+      (stantia(o)?', <b class="buco">oltre soglia</b>':'')+')</span>' : '<b class="buco">mai</b>')+'</dd>'+
+    '<dt>Verificato da</dt><dd>'+esc(o.verificato_da||"—")+'</dd>'+
+    '<dt>Stato</dt><dd><span data-edit-op="stato" data-slug="'+o.slug+'" data-val="'+esc(o.stato)+'" tabindex="0" '+
+      'title="doppio clic per correggere">'+esc(o.stato)+'</span>'+(o._mod?' <span class="mk">mod</span>':'')+'</dd>'+
+    '</dl><p class="no-stampa"><button data-verifica="'+o.slug+'">Ho verificato oggi</button></p></div>';
+
+  /* servizi */
+  h += '<div class="sezione"><h3>Catalogo servizi — '+sv.length+'</h3>';
+  if (sv.length){
+    h += '<div class="avvolgi" style="max-height:none"><table><thead><tr><th>Nome proprio</th><th>Tipo</th><th>Linea</th>'+
+         '<th>Che cosa esce</th><th>Durata</th><th>Prezzo</th><th>Condizioni economiche</th><th>Prova</th><th>Fonte</th></tr></thead><tbody>';
+    h += sv.map(v=>'<tr><td><b>'+esc(v.nome_proprio)+'</b></td><td class="q">'+esc(et("tipo",v.tipo))+'</td>'+
+      '<td>'+(v.linea==="fuori"?'<span class="q">fuori</span>':'<b>'+esc(v.linea)+'</b>')+'</td>'+
+      '<td>'+esc(v.consegna)+'</td><td class="q">'+esc(v.durata||"—")+'</td>'+
+      '<td class="'+(v.prezzo_natura==="non-pubblico"?"buco":"piena")+'" title="'+esc(et("prezzo_natura",v.prezzo_natura))+'">'+
+        (v.prezzo_natura==="non-pubblico" ? "non pubblico"
+          : esc(v.prezzo)+'<br><span class="q" style="font-weight:400">'+esc(br("prezzo_natura",v.prezzo_natura))+'</span>')+'</td>'+
+      '<td class="q">'+esc(v.condizioni||"—")+'</td>'+
+      '<td class="'+(v.prova?"":"buco")+'">'+esc(v.prova||"nessuna prova")+'</td>'+
+      '<td>'+mk(v.marcatura)+' <span class="mono q">'+dt(v.data)+'</span>'+
+        (v.fonte_url?' <a class="mono" href="'+esc(v.fonte_url)+'" target="_blank" rel="noopener">↗</a>':'')+'</td></tr>').join("");
+    h += '</tbody></table></div>';
+  } else {
+    h += '<p class="buco" style="padding:8px">Nessuna riga. È un buco del registro, non un fatto sull\'operatore.</p>';
+  }
+  h += '</div>';
+
+  /* competenza, con i gradini della scala visibili dove la scala compare */
+  h += '<div class="sezione"><h3>Profilo di competenza</h3>';
+  if (cp){
+    h += '<div class="due">';
+    for (const k of ["capacita_tecnica","esecuzione_interna"]){
+      const v = cp[k], sc = D.scale[k];
+      h += '<div><b>'+esc(sc.titolo)+'</b> <span class="q">'+esc(sc.domanda)+'</span><br>'+
+        (v==null ? '<b class="buco">gradino non determinato</b>' :
+          '<span class="scala" style="font-size:var(--g)">'+"■".repeat(v)+"□".repeat(3-v)+'</span> <b>'+v+'/3</b> — '+esc(sc.gradini[String(v)]))+
+        '<ol class="gradini" start="0">'+Object.keys(sc.gradini).map(g=>
+          '<li'+(String(v)===g?' style="font-weight:700;color:var(--inchiostro)"':'')+'>'+esc(sc.gradini[g])+'</li>').join("")+'</ol></div>';
+    }
+    h += '</div><dl class="campi" style="margin-top:10px">'+
+      '<dt>Composizione</dt><dd>'+(cp.composizione.map(c=>esc(et("composizione",c))).join(" · ")||'<b class="buco">non nota</b>')+'</dd>'+
+      '<dt>Organico</dt><dd>'+esc(cp.headcount)+' '+mk(cp.headcount_marcatura)+'</dd>'+
+      '<dt>Stack</dt><dd>'+(cp.stack.join(" · ")||'<b class="buco">non noto</b>')+'</dd>'+
+      '<dt>Deploy</dt><dd>'+(cp.deploy.join(" · ")||'<b class="buco">non noto</b>')+'</dd>'+
+      '<dt>Asset proprietari</dt><dd>'+(cp.asset_proprietari.map(esc).join(" · ")||'<b class="buco">nessuno noto</b>')+'</dd>'+
+      '<dt>Fonte</dt><dd>'+mk(cp.marcatura)+' <span class="mono q">'+dt(cp.data)+'</span> '+
+        (cp.fonte_url?'<a class="mono" href="'+esc(cp.fonte_url)+'" target="_blank" rel="noopener">↗</a>':'')+'</dd></dl>';
+  } else h += '<p class="buco" style="padding:8px">Nessun profilo di competenza.</p>';
+  h += '</div>';
+
+  /* economia */
+  h += '<div class="sezione"><h3>Economia</h3><dl class="campi">'+
+    '<dt>Modello di ricavo</dt><dd>'+(o.modello_ricavo.map(m=>esc(et("modello_ricavo",m))).join(" · ")||'<b class="buco">non noto</b>')+'</dd>'+
+    '<dt>Chi rischia</dt><dd>'+(o.chi_rischia==="non-noto"?'<b class="buco">non determinato</b>':'<b>'+esc(et("chi_rischia",o.chi_rischia))+'</b>')+'</dd>'+
+    '<dt>Segmenti</dt><dd>'+(o.segmenti.map(x=>esc(et("segmento",x))).join(" · ")||'<b class="buco">non noti</b>')+' '+mk(o.segmenti_marcatura)+'</dd>'+
+    '<dt>Nota</dt><dd>'+esc(o.economia_nota)+' '+mk(o.economia_marcatura)+
+      (o.economia_fonte_url?' <a class="mono" href="'+esc(o.economia_fonte_url)+'" target="_blank" rel="noopener">↗</a>':'')+'</dd></dl></div>';
+
+  /* firma */
+  if (fr){
+    h += '<div class="sezione"><h3>Firma verbale — testo letterale, mai tradotto</h3><dl class="campi">'+
+      '<dt>Payoff</dt><dd>'+(fr.payoff?'«'+esc(fr.payoff)+'»':'<b class="buco">nessun payoff</b>')+'</dd>'+
+      '<dt>Headline</dt><dd>'+(fr.headline?'«'+esc(fr.headline)+'»':'<b class="buco">non rilevata</b>')+'</dd>'+
+      '<dt>Si definisce</dt><dd>'+esc(fr.categoria_autoattribuita||"—")+'</dd>'+
+      '<dt>Territorio</dt><dd><b>'+esc(et("territorio",fr.territorio))+'</b></dd>'+
+      '<dt>Fonte</dt><dd>'+mk(fr.marcatura)+' <span class="q">rilevazione '+esc(fr.provenienza)+'</span> <span class="mono q">'+dt(fr.data)+'</span></dd>'+
+      '</dl></div>';
+  }
+
+  /* giudizi — modificabili in linea */
+  h += '<div class="sezione"><h3>Giudizi — separati dai fatti, ciascuno con il nome di chi lo ha espresso</h3>'+
+       '<p class="q no-stampa">Doppio clic su un valore per correggerlo. Ogni correzione chiede la motivazione e la registra con autore e data.</p>';
+  const ordine = ["sovr_oi","sovr_vb","sovr_ai","sovr_ma","punteggio","radar","arg_loro","arg_nostro"];
+  for (const campo of ordine){
+    const g = gd.find(x=>x.campo===campo);
+    if (!g) continue;
+    const val = campo==="radar" ? et("radar",g.valore) : g.valore;
+    h += '<div class="giud'+(g._mod?" modificato":"")+'"><div class="capo">'+
+      '<span class="q">'+esc(et("campo_giudizio",campo))+'</span>'+
+      '<span class="val" data-edit-gd="'+g.id+'" tabindex="0" title="doppio clic per correggere">'+esc(val)+'</span></div>'+
+      '<p class="meta">'+esc(g.motivazione)+'</p>'+
+      '<p class="meta">— '+esc(g.autore)+', '+dt(g.data)+(g._mod?' · <b>corretto localmente</b>':'')+'</p></div>';
+  }
+  h += '</div>';
+
+  /* segnali */
+  if (sg.length){
+    h += '<div class="sezione"><h3>Segnali datati — '+sg.length+'</h3><ul>'+
+      sg.sort((a,b)=>b.data.localeCompare(a.data)).map(x=>'<li><span class="mono">'+dt(x.data)+'</span> '+
+        esc(x.testo)+' '+mk(x.marcatura)+'</li>').join("")+'</ul></div>';
+  }
+
+  /* incertezze */
+  if (inc.length){
+    h += '<div class="sezione"><h3>Incertezze aperte su questo operatore — '+inc.length+'</h3>'+
+      inc.map(i=>'<div class="giud"><div class="capo"><b class="mono">'+esc(i.id)+'</b>'+
+        '<span class="'+(i.costo_stimato==="alto"?"buco":"q")+'">costo '+esc(i.costo_stimato)+' · '+i.ore_stimate+' ore</span></div>'+
+        '<p>'+esc(i.cosa)+'</p><p class="meta"><b>Perché conta.</b> '+esc(i.perche_conta)+'</p>'+
+        '<p class="meta"><b>Che cosa la chiude.</b> '+esc(i.fonte_che_la_chiude)+'</p></div>').join("")+'</div>';
+  }
+
+  /* movimento laterale — vietato il vicolo cieco */
+  const tipiSuoi = [...new Set(sv.map(v=>v.tipo))];
+  const stessoServizio = D.operatori.filter(x=>x.slug!==o.slug && x.stato!=="archiviato" &&
+    servizi(x.slug).some(v=>tipiSuoi.includes(v.tipo))).slice(0,8);
+  const stessoRicavo = D.operatori.filter(x=>x.slug!==o.slug && x.stato!=="archiviato" &&
+    x.modello_ricavo.some(m=>o.modello_ricavo.includes(m))).slice(0,8);
+  const stessaArena = D.operatori.filter(x=>x.slug!==o.slug && x.arena===o.arena && x.stato!=="archiviato").slice(0,8);
+  const st = storia().filter(x=>x!==o.slug);
+
+  h += '<div class="sezione no-stampa"><h3>Da qui si esce di lato</h3>';
+  const gruppo = (tit, lista) => lista.length ? '<p class="q" style="margin-bottom:2px">'+tit+'</p><div class="lat">'+
+      lista.map(x=>'<a href="'+url({vista:"chi",slug:x.slug||x})+'">'+esc((x.nome)||op(x).nome)+'</a>').join("")+'</div>' : "";
+  h += gruppo("Chi altro fa questi servizi", stessoServizio);
+  h += gruppo("Chi ha lo stesso modello di ricavo", stessoRicavo);
+  h += gruppo("Chi è nella stessa arena", stessaArena);
+  h += gruppo("Chi ho guardato prima", st);
+  h += '</div>';
+
+  const sovrAlte = ordine.slice(0,4).filter(c=>{const g=gd.find(x=>x.campo===c); return g && g.valore==="alta";});
+  h += '<div class="riga-quindi"><b>E quindi.</b><span>'+
+    (sovrAlte.length ? 'Sovrapposizione alta su '+sovrAlte.map(c=>'<b>'+esc(et("linea",c.replace("sovr_","")))+'</b>').join(", ")+': va nel brief di quella linea. '
+                     : 'Nessuna sovrapposizione alta: non è un concorrente frontale. ')+
+    (inc.length ? 'Prima di usarlo in trattativa, chiudi <b class="mono">'+esc(inc[0].id)+'</b>. ' : '')+
+    '<a href="'+url({vista:"brief", ctx:"operatore:"+o.slug})+'">Genera il brief su '+esc(o.nome)+'</a> · '+
+    '<a href="'+url({vista:"campo", sel:[o.slug]})+'">Confrontalo nel campo</a></span></div>';
+  return h;
+}
+
+/* -------------------------------------------------------------- D · Brief */
+function vistaBrief(s){
+  let h = '<div class="no-stampa"><h1>Brief</h1>'+
+    '<p class="q">Scegli il contesto: il documento si genera dal registro. '+
+    '<b>Non è modificabile a mano: se il brief è sbagliato, si corregge il registro.</b></p><div class="lat" style="margin-bottom:10px">';
+  const voci = [];
+  for (const k of ["oi","vb","ai","ma"]) voci.push(["linea:"+k, "Linea "+et("linea",k)]);
+  for (const k of ["pmi","mid","pubblico","acquirenti"]) voci.push(["segmento:"+k, "Segmento "+et("segmento",k)]);
+  for (const k of ["oi","vb","ai","ma","sostituto"]) voci.push(["arena:"+k, "Arena "+k]);
+  h += voci.map(([c,n])=>'<a href="'+url({vista:"brief",ctx:c})+'" class="'+(s.ctx===c?"":"")+'" '+
+        (s.ctx===c?'style="background:var(--inchiostro);color:var(--carta)"':'')+'>'+esc(n)+'</a>').join("");
+  h += '</div><p class="q">Oppure un operatore singolo: aprilo in <b>Chi</b> e usa il collegamento in fondo alla scheda.</p>';
+  h += '<p><label>Nome del cliente o dell\'incontro, se serve in intestazione: <input id="cliente" size="30" value="'+
+       esc(localStorage.getItem("campo.cliente")||"")+'"></label> <button id="stampa">Stampa</button> <button id="copia">Copia testo</button></p></div>';
+
+  if (!s.ctx) return h + '<p class="q">Nessun contesto scelto.</p>';
+
+  const [tipo, chiave] = s.ctx.split(":");
+  let ops, titolo;
+  if (tipo === "operatore"){ ops = [op(chiave)].filter(Boolean); titolo = ops.length?ops[0].nome:chiave; }
+  else if (tipo === "linea"){
+    ops = D.operatori.filter(o=>o.stato!=="archiviato" && servizi(o.slug).some(v=>v.linea===chiave));
+    titolo = "Linea "+et("linea",chiave);
+  } else if (tipo === "segmento"){
+    ops = D.operatori.filter(o=>o.stato!=="archiviato" && o.segmenti.includes(chiave));
+    titolo = "Segmento "+et("segmento",chiave);
+  } else {
+    ops = D.operatori.filter(o=>o.stato!=="archiviato" && o.arena===chiave);
+    titolo = "Arena "+et("arena",chiave);
+  }
+  /* In un brief di linea conta prima la sovrapposizione su quella linea, poi il
+     punteggio: chi è in gara davvero sta in cima, non chi ha il punteggio più alto. */
+  const RANGO = {alta:3, media:2, bassa:1, nulla:0};
+  const pt  = o => +((giudizio(o.slug,"punteggio")||{}).valore || 0);
+  const sov = o => tipo==="linea" ? (RANGO[(giudizio(o.slug,"sovr_"+chiave)||{}).valore] || 0) : 0;
+  ops = ops.sort((a,b)=>sov(b)-sov(a) || pt(b)-pt(a) || a.nome.localeCompare(b.nome))
+           .slice(0, tipo==="operatore" ? 1 : 8);
+
+  const cliente = localStorage.getItem("campo.cliente") || "";
+  h += '<div id="brief-doc">';
+  h += '<h1>'+esc(titolo)+'</h1>';
+  h += '<p class="q">Brief competitivo Deploiable'+(cliente?' — '+esc(cliente):'')+' · generato il '+dt(OGGI)+'</p>';
+
+  h += '<h3>Chi è in gara</h3><table><thead><tr><th>Operatore</th><th>Perché è qui</th><th>Sovrapposizione</th></tr></thead><tbody>';
+  h += ops.map(o=>{
+    const sov = ["oi","vb","ai","ma"].map(l=>{const g=giudizio(o.slug,"sovr_"+l); return g&&(g.valore==="alta"||g.valore==="media")?et("linea",l)+" "+g.valore:null;}).filter(Boolean);
+    const rilievo = servizi(o.slug).filter(v=>tipo==="linea"?v.linea===chiave:v.linea!=="fuori").slice(0,3).map(v=>v.nome_proprio);
+    return '<tr><td><b>'+esc(o.nome)+'</b><br><span class="q">'+esc(o.sede)+'</span></td>'+
+      '<td>'+(rilievo.length?esc(rilievo.join(" · ")):'<b>nessun servizio a catalogo</b>')+'</td>'+
+      '<td>'+(sov.length?esc(sov.join(", ")):'<span class="q">bassa o nulla</span>')+'</td></tr>';
+  }).join("")+'</tbody></table>';
+
+  h += '<h3>Che cosa diranno, e che cosa rispondiamo</h3>';
+  let arg = 0;
+  for (const o of ops){
+    const l = giudizio(o.slug,"arg_loro"), n = giudizio(o.slug,"arg_nostro");
+    if (!l && !n) continue;
+    arg++;
+    h += '<p><b>'+esc(o.nome)+'.</b> '+(l?esc(l.valore):'<i>argomento non ricostruito</i>')+'<br>'+
+         '<b>Rispondiamo:</b> '+(n?esc(n.valore):'<i>non ricostruito</i>')+'</p>';
+  }
+  if (!arg) h += '<p>Nessun argomento di trattativa è stato ricostruito per questi operatori. '+
+    'Ricostruirlo da una riga di screening sarebbe la ricostruzione per analogia che il metodo vieta.</p>';
+
+  h += '<h3>Prezzi noti</h3>';
+  const prezzi = [];
+  for (const o of ops) for (const v of servizi(o.slug))
+    if (v.prezzo_natura !== "non-pubblico")
+      prezzi.push([o.nome, v.nome_proprio, v.prezzo, v.marcatura, v.durata, br("prezzo_natura",v.prezzo_natura)]);
+  h += prezzi.length ? '<table><thead><tr><th>Operatore</th><th>Servizio</th><th>Prezzo</th><th>Natura</th><th>Durata</th><th></th></tr></thead><tbody>'+
+      prezzi.map(p=>'<tr><td>'+esc(p[0])+'</td><td>'+esc(p[1])+'</td><td><b>'+esc(p[2])+'</b></td>'+
+        '<td class="q">'+esc(p[5])+'</td><td>'+esc(p[4]||"—")+'</td><td>'+mk(p[3])+'</td></tr>').join("")+
+      '</tbody></table><p class="q">Solo «a listino» è leggibile dal cliente prima della trattativa. '+
+      'Una dotazione di programma è il capitale che l\'operatore governa, non ciò che il cliente paga.</p>'
+    : '<p>Nessun prezzo pubblico su questo perimetro. È un fatto utilizzabile in trattativa: il confronto sul prezzo qui non esiste.</p>';
+
+  h += '<h3>Che cosa non sappiamo</h3>';
+  const slugs = ops.map(o=>o.slug);
+  const inc = D.incertezze.filter(i=>i.stato==="aperta" && (i.operatore==="" || slugs.includes(i.operatore)))
+              .sort((a,b)=>({alto:0,medio:1,basso:2})[a.costo_stimato]-({alto:0,medio:1,basso:2})[b.costo_stimato]).slice(0,6);
+  h += '<ul>'+inc.map(i=>'<li><b class="mono">'+esc(i.id)+'</b> '+esc(i.cosa)+'</li>').join("")+'</ul>';
+  const senzaCat = ops.filter(o=>!servizi(o.slug).length);
+  if (senzaCat.length) h += '<p><b>Attenzione.</b> '+senzaCat.map(o=>esc(o.nome)).join(", ")+
+    (senzaCat.length>1?' non hanno':' non ha')+' catalogo servizi nel registro: in questo brief '+
+    (senzaCat.length>1?'compaiono':'compare')+' come nome, non come profilo.</p>';
+
+  h += '<div class="pie">Deploiable · registro versione '+esc(D.versione)+', tornata del '+dt(D.tornata)+
+       ' · brief generato il '+dt(OGGI)+' · marcature: V verificato da fonte terza · D dichiarato dall\'operatore · '+
+       'S stimato da aggregatore · N cercato e non trovato. Uso interno.</div>';
+  h += '</div>';
+  return h;
+}
+
+/* ==========================================================================
+   4. Scrittura, ricerca, tasti
+   ========================================================================== */
+function lega(){
+  const T = document.getElementById("tela");
+  T.querySelectorAll("[data-taglio]").forEach(b=>b.onclick=()=>vai({taglio:b.dataset.taglio}));
+  T.querySelectorAll("[data-alterna]").forEach(b=>b.onclick=()=>alterna(b.dataset.alterna,b.dataset.val));
+  T.querySelectorAll("[data-marc]").forEach(b=>b.onclick=()=>vai({marc:b.dataset.marc}));
+  T.querySelectorAll("[data-buchi]").forEach(b=>b.onclick=()=>vai({buchi:!stato().buchi}));
+  T.querySelectorAll("[data-sel]").forEach(b=>b.onchange=()=>alterna("sel",b.dataset.sel));
+  T.querySelectorAll("[data-sel-vuota]").forEach(b=>b.onclick=()=>vai({sel:[]}));
+  const az = T.querySelector("#azzera"); if (az) az.onclick=()=>vai(Object.assign({},VUOTO,{vista:"campo",taglio:stato().taglio}));
+  const q = T.querySelector("#q");
+  if (q) q.onchange = ()=>vai({q:q.value.trim()});
+  const cl = T.querySelector("#cliente");
+  if (cl) cl.onchange = ()=>{ localStorage.setItem("campo.cliente", cl.value.trim()); disegna(); };
+  const st = T.querySelector("#stampa"); if (st) st.onclick=()=>window.print();
+  const cp = T.querySelector("#copia");
+  if (cp) cp.onclick=()=>{
+    const d = T.querySelector("#brief-doc");
+    if (!d) return;
+    navigator.clipboard.writeText(d.innerText).then(()=>{ cp.textContent="copiato"; setTimeout(()=>cp.textContent="Copia testo",1500); });
+  };
+  T.querySelectorAll("[data-verifica]").forEach(b=>b.onclick=()=>{
+    const o = op(b.dataset.verifica);
+    const m = prompt("Che cosa hai verificato? La motivazione resta a registro.");
+    if (m===null) return;
+    registra({tipo:"operatore", slug:o.slug, campo:"ultima_verifica",
+              da:o.ultima_verifica, a:OGGI, motivazione:m||"verifica di routine"});
+  });
+  T.querySelectorAll("[data-edit-gd]").forEach(el=>{
+    el.ondblclick = ()=>correggiGiudizio(el.dataset.editGd);
+    el.onkeydown = e=>{ if(e.key==="Enter") correggiGiudizio(el.dataset.editGd); };
+  });
+  T.querySelectorAll("[data-edit-op]").forEach(el=>{
+    el.ondblclick = ()=>correggiOperatore(el.dataset.slug, el.dataset.editOp);
+    el.onkeydown = e=>{ if(e.key==="Enter") correggiOperatore(el.dataset.slug, el.dataset.editOp); };
+  });
+}
+
+function correggiGiudizio(id){
+  const g = D.giudizi.find(x=>x.id===id); if (!g) return;
+  const suggerito = g.campo.startsWith("sovr_") ? " (alta · media · bassa · nulla)"
+                  : g.campo==="radar" ? " ("+Object.keys(D.enum.radar).join(" · ")+")"
+                  : g.campo==="punteggio" ? " (1-5)" : "";
+  const nuovo = prompt("Nuovo valore per «"+et("campo_giudizio",g.campo)+"»"+suggerito+":", g.valore);
+  if (nuovo===null || nuovo===g.valore) return;
+  if (g.campo.startsWith("sovr_") && !["alta","media","bassa","nulla"].includes(nuovo.trim()))
+    { alert("Enum chiuso: alta · media · bassa · nulla."); return; }
+  if (g.campo==="radar" && !Object.keys(D.enum.radar).includes(nuovo.trim()))
+    { alert("Enum chiuso: "+Object.keys(D.enum.radar).join(" · ")); return; }
+  if (g.campo==="punteggio" && !["1","2","3","4","5"].includes(nuovo.trim()))
+    { alert("Enum chiuso: 1-5."); return; }
+  const mot = prompt("Perché? Una riga. Un giudizio senza motivazione e senza autore è un dato falso.");
+  if (!mot) { alert("Senza motivazione la correzione non si registra."); return; }
+  registra({tipo:"giudizio", id:id, campo:"valore", da:g.valore, a:nuovo.trim(), motivazione:mot.trim()});
+}
+
+function correggiOperatore(slug, campo){
+  const o = op(slug); if (!o) return;
+  const nuovo = prompt("Nuovo «"+campo+"» ("+Object.keys(D.enum.stato).join(" · ")+"):", o[campo]);
+  if (nuovo===null || nuovo===o[campo]) return;
+  if (!Object.keys(D.enum.stato).includes(nuovo.trim())) { alert("Enum chiuso."); return; }
+  const mot = prompt("Perché? Chi entra e chi esce dal registro è una decisione: va motivata.");
+  if (!mot) { alert("Senza motivazione la correzione non si registra."); return; }
+  registra({tipo:"operatore", slug:slug, campo:campo, da:o[campo], a:nuovo.trim(), motivazione:mot.trim()});
+  if (nuovo.trim()==="archiviato")
+    registra({tipo:"operatore", slug:slug, campo:"motivo_archivio", da:o.motivo_archivio, a:mot.trim(), motivazione:mot.trim()});
+}
+
+/* ------------------------------------------------------------ modifiche */
+function pannelloModifiche(){
+  const v = document.createElement("div");
+  v.className = "velo";
+  const m = PATCH.modifiche;
+  v.innerHTML = '<div class="box"><h1>Modifiche non salvate — '+m.length+'</h1>'+
+    '<p class="q">Vivono nello spazio locale di questo browser. Esportale come patch JSON: '+
+    'chi tiene il registro la applica a <span class="mono">dati.json</span>. Nessuno deve ricompilare niente.</p>'+
+    (m.length ? '<div class="avvolgi" style="max-height:50vh"><table><thead><tr><th>Che cosa</th><th>Da</th><th>A</th><th>Chi, quando</th><th>Perché</th></tr></thead><tbody>'+
+      m.map((x,i)=>'<tr><td>'+esc(x.tipo)+' <span class="mono">'+esc(x.id||x.slug)+'</span><br><span class="q">'+esc(x.campo)+'</span></td>'+
+        '<td class="q">'+esc(String(x.da).slice(0,60))+'</td><td><b>'+esc(String(x.a).slice(0,60))+'</b></td>'+
+        '<td>'+esc(x.autore)+'<br><span class="mono q">'+dt(x.data)+'</span></td>'+
+        '<td>'+esc(x.motivazione)+' <button data-togli="'+i+'" class="no-stampa">togli</button></td></tr>').join("")+
+      '</tbody></table></div>' : '<p>Nessuna modifica.</p>')+
+    '<p><button id="esporta">Esporta la patch</button> <button id="svuota">Svuota</button> '+
+    '<button id="chiudi">Chiudi</button></p></div>';
+  document.body.appendChild(v);
+  v.querySelector("#chiudi").onclick = ()=>v.remove();
+  v.querySelectorAll("[data-togli]").forEach(b=>b.onclick=()=>{
+    PATCH.modifiche.splice(+b.dataset.togli,1); scrivi(LS_PATCH,PATCH); v.remove(); location.reload();
+  });
+  v.querySelector("#svuota").onclick = ()=>{
+    if (!confirm("Elimino "+m.length+" modifiche locali?")) return;
+    scrivi(LS_PATCH,{modifiche:[]}); v.remove(); location.reload();
+  };
+  v.querySelector("#esporta").onclick = ()=>{
+    const b = new Blob([JSON.stringify({registro:D.versione, tornata:D.tornata, generato:OGGI,
+      autore:IO, modifiche:PATCH.modifiche}, null, 1)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "patch-"+OGGI+"-"+(IO||"anonimo").toLowerCase().replace(/\W+/g,"-")+".json";
+    a.click(); URL.revokeObjectURL(a.href);
+  };
+}
+
+/* -------------------------------------------------------------- ricerca */
+function pannelloRicerca(){
+  const v = document.createElement("div");
+  v.className = "velo";
+  v.innerHTML = '<div class="box"><h1>Cerca ovunque</h1>'+
+    '<p class="q">Operatori, servizi, argomenti di trattativa, segnali, incertezze.</p>'+
+    '<input id="rq" style="width:100%" placeholder="scrivi…" autofocus>'+
+    '<ul id="ricerca-esiti"></ul><p><button id="rchiudi">Chiudi</button></p></div>';
+  document.body.appendChild(v);
+  const inp = v.querySelector("#rq"), out = v.querySelector("#ricerca-esiti");
+  v.querySelector("#rchiudi").onclick = ()=>v.remove();
+  v.onkeydown = e=>{ if(e.key==="Escape") v.remove(); };
+  inp.oninput = ()=>{
+    const t = inp.value.trim().toLowerCase();
+    if (t.length < 2) { out.innerHTML = ""; return; }
+    const r = [];
+    for (const o of D.operatori) if ((o.nome+" "+o.sede+" "+o.nota).toLowerCase().includes(t))
+      r.push(["operatore", o.nome, o.sede+" · "+et("arena",o.arena), url({vista:"chi",slug:o.slug})]);
+    for (const s of D.servizi) if ((s.nome_proprio+" "+s.consegna+" "+s.prova).toLowerCase().includes(t))
+      r.push(["servizio", s.nome_proprio, op(s.operatore).nome+" · "+et("tipo",s.tipo), url({vista:"chi",slug:s.operatore})]);
+    for (const g of D.giudizi) if (g.campo.startsWith("arg_") && g.valore.toLowerCase().includes(t))
+      r.push(["argomento", g.valore.slice(0,110)+"…", op(g.operatore).nome+" · "+et("campo_giudizio",g.campo), url({vista:"chi",slug:g.operatore})]);
+    for (const s of D.segnali) if (s.testo.toLowerCase().includes(t))
+      r.push(["segnale", s.testo.slice(0,110)+"…", dt(s.data), s.soggetto!=="mercato"?url({vista:"chi",slug:s.soggetto}):url({vista:"oggi"})]);
+    for (const i of D.incertezze) if ((i.cosa+" "+i.perche_conta).toLowerCase().includes(t))
+      r.push(["incertezza", i.id+" — "+i.cosa.slice(0,100)+"…", "costo "+i.costo_stimato, url({vista:"oggi"})]);
+    out.innerHTML = r.slice(0,40).map(x=>'<li><span class="tipo">'+esc(x[0])+'</span><br>'+
+      '<a href="'+x[3]+'">'+esc(x[1])+'</a> <span class="q">'+esc(x[2])+'</span></li>').join("")
+      || '<li class="q">Nessun risultato.</li>';
+    out.querySelectorAll("a").forEach(a=>a.onclick=()=>v.remove());
+  };
+  inp.focus();
+}
+
+function legaTasti(){
+  document.getElementById("btn-cerca").onclick = pannelloRicerca;
+  document.getElementById("btn-modifiche").onclick = pannelloModifiche;
+  document.addEventListener("keydown", e=>{
+    const dentro = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    if (!dentro && (e.key === "/" || ((e.metaKey||e.ctrlKey) && e.key === "k"))){
+      e.preventDefault(); pannelloRicerca();
+    }
+  });
+}
+</script>
+</body>
+</html>
