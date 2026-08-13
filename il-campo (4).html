@@ -1,0 +1,3948 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il campo — analisi competitor Deploiable V3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --carta:#FBFAF6; --pan:#FFFFFF; --pan2:#F0EDE4; --pan3:#E4E0D3;
+  --ink:#15140F; --ink2:#45423A; --ink3:#67635A;
+  --filo:#D6D0C0; --filo2:#B9B2A0;
+  --acc:#A33208; --acc-b:#F5E4DC;
+  --m3:#A81507; --m2:#8A5200; --m1:#3D5F72; --m0:#6E6A5F;
+  --m3b:#F7E3E0; --m2b:#F6ECD8; --m1b:#E3EAEF; --m0b:#EDEBE4;
+  --V:#14664A; --D:#8A5200; --S:#204C8F; --N:#5F5C53;
+  --disp:"Fraunces",Georgia,serif;
+  --sans:"Archivo",Helvetica Neue,Arial,sans-serif;
+  --mono:"JetBrains Mono",SFMono-Regular,Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--carta);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums lining-nums}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px 100px}
+
+header{padding:44px 0 26px;border-bottom:2px solid var(--ink)}
+.occhiello{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--acc);margin:0 0 14px;font-weight:500}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(36px,5.6vw,64px);
+  line-height:.97;letter-spacing:-.022em;margin:0 0 16px}
+h1 em{font-style:italic;font-weight:400;color:var(--ink2)}
+.sotto{max-width:66ch;color:var(--ink2);margin:0;font-size:16px}
+.cifre{display:flex;flex-wrap:wrap;gap:34px;margin:30px 0 0}
+.cifra b{display:block;font-family:var(--disp);font-size:34px;font-weight:700;
+  line-height:1;letter-spacing:-.02em}
+.cifra span{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink3);font-weight:500}
+.cifra.hot b{color:var(--m3)} .cifra.acc b{color:var(--acc)}
+
+nav{position:sticky;top:0;z-index:50;display:flex;gap:0;background:#FBFAF6F5;
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--filo);margin:0 0 30px;
+  overflow-x:auto;padding:0 24px;margin-inline:-24px}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--ink3);
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:16px 16px;cursor:pointer;white-space:nowrap;font-weight:500}
+nav button:hover{color:var(--ink)}
+nav button[aria-selected="true"]{color:var(--acc);border-bottom-color:var(--acc)}
+section[hidden]{display:none}
+h2{font-family:var(--disp);font-size:26px;font-weight:600;letter-spacing:-.015em;margin:0 0 6px}
+h3{font-family:var(--disp);font-size:18px;font-weight:600;margin:0 0 4px}
+.desc{color:var(--ink2);max-width:76ch;margin:0 0 24px;font-size:14.5px}
+
+.barra{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;background:var(--pan);
+  border:1px solid var(--filo);border-radius:2px;padding:16px 18px;margin:0 0 22px}
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink3);font-weight:500}
+select,input[type=search]{background:var(--pan);border:1px solid var(--filo2);color:var(--ink);
+  font-family:var(--sans);font-size:14px;padding:8px 11px;border-radius:2px;min-width:200px}
+select:focus,input:focus{outline:2px solid var(--acc);outline-offset:-2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--pan);border:1px solid var(--filo2);color:var(--ink2);
+  font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:2px;cursor:pointer;
+  font-weight:500}
+.chip:hover{border-color:var(--ink3);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--carta)}
+.conta{font-family:var(--mono);font-size:12px;color:var(--ink3);margin:0 0 16px;font-weight:500}
+.conta b{color:var(--ink)}
+
+/* matrice */
+.matrice{display:grid;grid-template-columns:124px repeat(4,1fr);gap:1px;
+  background:var(--filo);border:1px solid var(--filo);border-radius:2px;overflow:hidden}
+.mh{background:var(--pan2);padding:10px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);text-align:center;font-weight:500}
+.mh.ang{text-align:left;color:var(--acc)}
+.my{background:var(--pan2);padding:12px 10px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);display:flex;
+  align-items:center;font-weight:500}
+.cella{background:var(--pan);min-height:104px;padding:9px;display:flex;flex-wrap:wrap;
+  gap:5px;align-content:flex-start}
+.cella.vuota{background:var(--acc-b);position:relative}
+.cella.vuota::after{content:"libero";position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--acc);font-weight:500}
+.pin{display:inline-flex;align-items:center;gap:6px;background:var(--pan2);
+  border:1px solid var(--filo2);border-radius:2px;padding:5px 8px;font-size:12.5px;
+  cursor:pointer;max-width:100%;color:var(--ink);font-family:var(--sans)}
+.pin:hover{border-color:var(--ink);background:var(--pan3)}
+.pin span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt{width:9px;height:9px;border-radius:50%;flex:0 0 auto;border:1px solid #00000022}
+.pin.noi{background:var(--ink);border-color:var(--ink);color:var(--carta);font-weight:600}
+.legenda{display:flex;flex-wrap:wrap;gap:20px;margin:18px 0 0;font-family:var(--mono);
+  font-size:11.5px;color:var(--ink2);font-weight:500}
+.legenda i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;
+  border:1px solid #00000022}
+
+.nota{background:var(--pan);border-left:3px solid var(--acc);padding:15px 18px;
+  margin:24px 0 0;font-size:14.5px;color:var(--ink2)}
+.nota b{color:var(--ink)}
+.griglia{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.scheda{background:var(--pan);border:1px solid var(--filo);border-radius:2px;padding:18px}
+.scheda .n{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink3);margin:0 0 14px;font-weight:500}
+.scheda ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.scheda li{display:flex;align-items:center;gap:9px;font-size:13.5px;cursor:pointer;
+  padding:6px;margin:0 -6px;border-radius:2px}
+.scheda li:hover{background:var(--pan2)}
+.scheda li .via{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink3);
+  text-align:right;font-weight:500}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink3);text-align:left;padding:10px;border-bottom:2px solid var(--ink);
+  cursor:pointer;white-space:nowrap;user-select:none;font-weight:500}
+th:hover{color:var(--ink)}
+td{padding:11px 10px;border-bottom:1px solid var(--filo);vertical-align:top}
+tbody tr{cursor:pointer} tbody tr:hover{background:var(--pan)}
+tbody tr.noi{background:var(--pan2)} tbody tr.noi td{font-weight:500}
+tbody tr.arch td{opacity:.55} tbody tr.arch:hover td{opacity:1}
+.tag.arch{border-color:var(--m2);color:var(--m2);background:var(--m2b)}
+.nome{font-weight:600}
+.mk{display:inline-block;min-width:19px;height:19px;line-height:18px;text-align:center;
+  font-family:var(--mono);font-size:10px;border-radius:2px;font-weight:500;border:1px solid}
+.mk-V{background:#E4F2EC;color:var(--V);border-color:#A8D0BF}
+.mk-D{background:#F6ECD8;color:var(--D);border-color:#DCC189}
+.mk-S{background:#E3EAF6;color:var(--S);border-color:#A9BEDF}
+.mk-N{background:#EDEBE4;color:var(--N);border-color:#C6C1B4}
+.barre{display:inline-flex;gap:2px;vertical-align:middle}
+.barre i{width:9px;height:15px;background:var(--pan2);border:1px solid var(--filo2);
+  border-radius:1px}
+.barre i.on{background:var(--ink2);border-color:var(--ink2)}
+.tag{font-family:var(--mono);font-size:10.5px;color:var(--ink2);border:1px solid var(--filo2);
+  border-radius:2px;padding:3px 6px;margin:0 4px 4px 0;display:inline-block;background:var(--pan)}
+.tag.acc{border-color:var(--acc);color:var(--acc);background:var(--acc-b)}
+
+/* battlecard */
+.bc{background:var(--pan);border:1px solid var(--filo);border-left:4px solid;
+  border-radius:2px;padding:20px;margin:0 0 14px}
+.bc.t3{border-left-color:var(--m3)} .bc.t2{border-left-color:var(--m2)}
+.bc.t1{border-left-color:var(--m1)} .bc.t0{border-left-color:var(--m0)}
+.bc-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 4px}
+.bc-top h3{margin:0}
+.bc .liv{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:2px;font-weight:500}
+.liv3{background:var(--m3b);color:var(--m3)} .liv2{background:var(--m2b);color:var(--m2)}
+.liv1{background:var(--m1b);color:var(--m1)} .liv0{background:var(--m0b);color:var(--m0)}
+.bc .via{font-family:var(--mono);font-size:11px;color:var(--ink3);margin:0 0 14px;font-weight:500}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 0}
+.duo>div{padding:13px 15px;border-radius:2px}
+.duo .k{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  margin:0 0 6px;font-weight:500}
+.duo .contro{background:var(--m3b)} .duo .contro .k{color:var(--m3)}
+.duo .nostro{background:#E4F2EC} .duo .nostro .k{color:var(--V)}
+.duo p:last-child{margin:0;font-size:14px}
+@media(max-width:700px){.duo{grid-template-columns:1fr}}
+
+/* territori */
+.terr{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--filo)}
+.terr .bar{flex:0 0 180px;height:22px;background:var(--pan2);border:1px solid var(--filo2);
+  border-radius:2px;overflow:hidden;position:relative}
+.terr .bar i{display:block;height:100%;background:var(--ink2)}
+.terr .bar.zero i{background:var(--acc)}
+.terr .n{font-family:var(--mono);font-size:12px;font-weight:500;flex:0 0 34px;text-align:right}
+.terr .txt{flex:1}
+.terr .txt b{display:block;font-size:15px}
+.terr .txt span{font-size:13.5px;color:var(--ink2)}
+.terr.libero .txt b{color:var(--acc)}
+
+/* segnali */
+.tl{border-left:2px solid var(--filo);padding:0 0 0 26px;margin:0}
+.ev{position:relative;padding:0 0 24px}
+.ev::before{content:"";position:absolute;left:-33px;top:6px;width:11px;height:11px;
+  border-radius:50%;background:var(--pan);border:2px solid var(--ink2)}
+.ev.norma::before{border-color:var(--m3);background:var(--m3)}
+.ev.finestra::before{border-color:var(--acc);background:var(--acc)}
+.ev .d{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--acc);
+  font-weight:500}
+.ev p{margin:2px 0 0;font-size:14.5px}
+.inc{background:var(--pan);border:1px solid var(--filo);border-radius:2px;padding:16px 18px;
+  margin:0 0 12px}
+.inc b{display:block;font-size:15px;margin:0 0 5px}
+.inc .p{color:var(--ink2);font-size:14px;margin:0 0 8px}
+.inc .c{font-family:var(--mono);font-size:11.5px;color:var(--acc);font-weight:500}
+
+/* matrice offerta */
+.mxo{width:100%;border-collapse:collapse;font-size:13px}
+.mxo th{border-bottom:2px solid var(--ink);padding:8px 6px;vertical-align:bottom;
+  font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink2);text-align:center;cursor:default}
+.mxo th.rig{text-align:left;width:210px;border-bottom:2px solid var(--ink)}
+.mxo th.noi{background:var(--acc-b);color:var(--acc)}
+.mxo td{border-bottom:1px solid var(--filo);padding:0;text-align:center;height:38px}
+.mxo td.rig{text-align:left;padding:8px 10px;font-size:13.5px;font-weight:500;cursor:default}
+.mxo td.noi{background:var(--acc-b)}
+.cel{width:100%;height:38px;border:0;background:none;cursor:pointer;font-family:var(--mono);
+  font-size:13px;font-weight:500;color:var(--carta)}
+.cel:hover{outline:2px solid var(--ink);outline-offset:-2px}
+.cel.v0{background:var(--pan2);color:var(--ink3)}
+.cel.v1{background:#C9BCA8;color:var(--ink)}
+.cel.v2{background:#6F6250}
+.cel.v3{background:#5A4E3C}
+.riga-vuota td.rig{color:var(--acc)}
+/* servizio */
+.srv{background:var(--pan);border:1px solid var(--filo);border-left:3px solid var(--filo2);
+  border-radius:2px;padding:15px 17px;margin:0 0 10px}
+.srv.noi{border-left-color:var(--acc);background:var(--acc-b)}
+.srv-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 6px}
+.srv-top b{font-size:15.5px}
+.srv .op{font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:500}
+.srv .meta{display:flex;flex-wrap:wrap;gap:18px;margin:10px 0 0;font-size:13px;color:var(--ink2)}
+.srv .meta span b{color:var(--ink);font-weight:500}
+/* competenze */
+.cmp{background:var(--pan);border:1px solid var(--filo);border-radius:2px;padding:18px;
+  margin:0 0 14px}
+.cmp.noi{border:2px solid var(--acc);background:var(--acc-b)}
+.cmp-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.scala{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+.scala .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);flex:0 0 128px;font-weight:500}
+.scala .val{font-size:13.5px;font-weight:500}
+/* drawer */
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,96vw);background:var(--pan);
+  border-left:2px solid var(--ink);z-index:100;overflow-y:auto;padding:30px;
+  transform:translateX(101%);transition:transform .24s cubic-bezier(.4,0,.2,1)}
+.drawer.on{transform:translateX(0)}
+.drawer h3{font-family:var(--disp);font-size:28px;font-weight:700;margin:0 0 4px;
+  letter-spacing:-.02em}
+.chiudi{position:absolute;top:20px;right:22px;background:var(--pan2);border:1px solid var(--filo2);
+  color:var(--ink);font-size:18px;cursor:pointer;line-height:1;width:32px;height:32px;
+  border-radius:2px}
+.chiudi:hover{background:var(--ink);color:var(--carta)}
+.riga{border-top:1px solid var(--filo);padding:14px 0}
+.riga .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink3);margin:0 0 6px;font-weight:500}
+.riga .v{margin:0;font-size:14.5px}
+.riga .v.cit{font-family:var(--disp);font-style:italic;font-size:17px}
+.velo{position:fixed;inset:0;background:#15140F66;z-index:99;opacity:0;pointer-events:none;
+  transition:opacity .24s}
+.velo.on{opacity:1;pointer-events:auto}
+.btn{background:var(--ink);border:0;color:var(--carta);font-family:var(--mono);font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;padding:10px 15px;border-radius:2px;
+  cursor:pointer;margin:18px 8px 0 0;font-weight:500}
+.btn:hover{background:var(--acc)}
+.cfr{overflow-x:auto} .cfr table{min-width:700px}
+.cfr th.rig{width:160px;color:var(--ink3);vertical-align:top;font-weight:500;
+  border-bottom:1px solid var(--filo)}
+.cfr td{border-left:1px solid var(--filo)}
+.cfr .capo{font-family:var(--disp);font-size:19px;font-weight:600;margin:0 0 6px}
+.vuoto{border:2px dashed var(--filo2);border-radius:2px;padding:40px;text-align:center;
+  color:var(--ink3);font-family:var(--mono);font-size:12.5px}
+@media print{nav,.barra,.btn,.chiudi{display:none}section{display:block!important}}
+@media(max-width:820px){.matrice{grid-template-columns:84px repeat(4,1fr)}
+  .mh,.my{font-size:9px;padding:8px 5px}.cella{min-height:86px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="occhiello">Deploiable · analisi competitor V3 · 13.08.2026</p>
+  <h1>Il campo,<br><em>e dove si può stare</em></h1>
+  <p class="sotto">Trentasette operatori su campi confrontabili. Non è un documento:
+    è uno strumento per rispondere a una domanda sola — <b>quando il cliente decide,
+    chi altro c'è nella stanza, cosa dirà, e cosa resta libero.</b></p>
+  <div class="cifre" id="cifre"></div>
+</header>
+<nav id="nav"></nav>
+
+<section id="v-offerta">
+  <h2>Che cosa vendono, servizio per servizio</h2>
+  <p class="desc">Un servizio per riga, col nome che gli danno loro, cosa consegna, quanto
+    dura, quanto costa e la fonte. <b>Righe piene = servizio presidiato. Righe vuote = buco
+    di copertura.</b> Clicca una cella per vedere i servizi.</p>
+  <div id="mx-off"></div>
+  <div class="legenda" style="margin-top:14px">
+    <span><b>Colonna evidenziata</b> = noi</span>
+    <span>Il numero nella cella è quanti servizi copre quell'operatore su quel tipo</span>
+  </div>
+  <div class="nota" id="nota-off"></div>
+  <h3 style="margin:36px 0 4px">Catalogo</h3>
+  <p class="desc">Tutti i servizi mappati. Ogni riga ha fonte e marcatura sue, non
+    dell'operatore.</p>
+  <div class="barra">
+    <div class="campo"><label for="s-q">Cerca</label>
+      <input type="search" id="s-q" placeholder="nome del servizio, cosa consegna…"></div>
+    <div class="campo"><label for="s-op">Operatore</label><select id="s-op"></select></div>
+    <div class="campo"><label for="s-tipo">Tipo di servizio</label><select id="s-tipo"></select></div>
+    <div class="campo"><label>Solo con prezzo reale</label>
+      <div class="chips"><button class="chip" id="s-prezzo" aria-pressed="false">prezzo esposto</button></div></div>
+  </div>
+  <p class="conta" id="s-conta"></p>
+  <div id="catalogo"></div>
+</section>
+
+<section id="v-competenze" hidden>
+  <h2>Chi sa fare cosa</h2>
+  <p class="desc">Il profilo di competenza, che nella versione precedente non esisteva.
+    <b>Capacità tecnica</b> è la scala che conta: non tocca codice · integra strumenti di terzi ·
+    sviluppa su stack altrui · sviluppa tecnologia propria. Accanto, quanto eseguono in casa
+    invece di subappaltare.</p>
+  <div id="competenze"></div>
+</section>
+
+<section id="v-sintesi" hidden>
+  <h2>Cinque letture, calcolate sui dati</h2>
+  <p class="desc">Non sono un riassunto. Sono cinque conti che la dashboard rifà da sola
+    ogni volta che il registro cambia — se un dato si corregge, cambia la conclusione.</p>
+  <div id="letture"></div>
+</section>
+
+<section id="v-mappa" hidden>
+  <h2>Mappa del posizionamento</h2>
+  <p class="desc">Scegli i due assi. Le caselle marcate <b>libero</b> sono spazio non
+    presidiato: è lì che si guarda per decidere dove stare. Sotto, il calcolo di quali
+    coppie di assi lasciano più spazio vuoto.</p>
+  <div class="barra">
+    <div class="campo"><label for="ax">Asse orizzontale</label><select id="ax"></select></div>
+    <div class="campo"><label for="ay">Asse verticale</label><select id="ay"></select></div>
+    <div class="campo"><label>Filtra per arena</label><div class="chips" id="f-arena"></div></div>
+  </div>
+  <div class="matrice" id="matrice"></div>
+  <div class="legenda">
+    <span><i style="background:var(--m3)"></i>Minaccia frontale</span>
+    <span><i style="background:var(--m2)"></i>Minaccia laterale</span>
+    <span><i style="background:var(--m1)"></i>Contende il budget</span>
+    <span><i style="background:var(--m0)"></i>Non concorrente</span>
+    <span><i style="background:var(--ink)"></i>Noi</span>
+  </div>
+  <div class="nota" id="nota-mappa"></div>
+  <h3 style="margin:34px 0 4px">Come si legge «fin dove arriva il fornitore»</h3>
+  <p class="desc">È l'asse più frainteso, quindi va detto in chiaro: <b>non misura quanto
+    un operatore è bravo. Misura dove finisce il suo contratto</b> — cioè in quale momento
+    il cliente deve cercare qualcun altro. Ogni gradino in più è budget che resta al
+    fornitore invece di andare a una seconda gara.</p>
+  <div class="griglia" id="deliv-def"></div>
+  <h3 style="margin:36px 0 4px">Chi ci somiglia di più</h3>
+  <p class="desc">Distanza calcolata su nove campi normalizzati: le quattro linee, la
+    profondità di delivery, i segmenti, i modelli di ricavo, l'arena e il meccanismo di
+    ingresso. Più alta la somiglianza, meno il compratore riesce a distinguerci.</p>
+  <div id="simili"></div>
+</section>
+
+<section id="v-arene" hidden>
+  <h2>Le arene, e come si entra dal cliente</h2>
+  <p class="desc">Raggruppati per mestiere d'origine, non per come si autodefiniscono.
+    A destra il campo che nella V2 non esisteva: il <b>meccanismo di acquisizione</b>.
+    È lì che si vince, non nell'offerta.</p>
+  <div class="griglia" id="arene"></div>
+  <h3 style="margin:36px 0 4px">Territori verbali</h3>
+  <p class="desc">Quanti operatori presidiano ogni promessa, su 46 firme rilevate.
+    In arancione ciò che è libero.</p>
+  <div id="territori"></div>
+</section>
+
+<section id="v-gara" hidden>
+  <h2>In gara</h2>
+  <p class="desc">Scegli il segmento e la linea: ottieni chi sarà nella stanza, cosa dirà
+    contro di noi e cosa rispondiamo. Ordinati per minaccia.</p>
+  <div class="barra">
+    <div class="campo"><label for="g-tgt">Segmento del cliente</label><select id="g-tgt"></select></div>
+    <div class="campo"><label for="g-lin">Linea in gara</label><select id="g-lin"></select></div>
+    <div class="campo"><label>&nbsp;</label><button class="btn" style="margin:0"
+      onclick="copiaGara()">Copia per il deck</button></div>
+  </div>
+  <p class="conta" id="g-conta"></p>
+  <div id="gara"></div>
+</section>
+
+<section id="v-registro" hidden>
+  <h2>Registro completo</h2>
+  <p class="desc">Ordinabile da ogni intestazione. Le quattro colonne di linea sono la
+    sovrapposizione con la nostra offerta, da nulla ad alta.</p>
+  <div class="barra">
+    <div class="campo"><label for="q">Cerca</label>
+      <input type="search" id="q" placeholder="nome, argomento, meccanismo, note…"></div>
+    <div class="campo"><label>Affidabilità del dato</label><div class="chips" id="f-mk"></div></div>
+    <div class="campo"><label>Modello di ricavo</label><div class="chips" id="f-ric"></div></div>
+    <div class="campo"><label>Segmento servito</label><div class="chips" id="f-tgt"></div></div>
+  </div>
+  <p class="conta" id="conta"></p>
+  <div id="nota-arch"></div>
+  <table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table>
+</section>
+
+<section id="v-confronto" hidden>
+  <h2>Confronto affiancato</h2>
+  <p class="desc">Fino a tre operatori accanto a noi, righe allineate sugli stessi campi.
+    Si aggiungono dalla scheda di ciascuno.</p>
+  <div class="cfr" id="cfr"></div>
+</section>
+
+<section id="v-segnali" hidden>
+  <h2>Segnali datati</h2>
+  <p class="desc">Cosa è successo e cosa sta per succedere, con la data. In rosso le
+    scadenze normative, in arancione le finestre che si aprono o si chiudono.</p>
+  <div class="tl" id="tl"></div>
+  <h3 style="margin:36px 0 4px">Cosa non sappiamo</h3>
+  <p class="desc">Le incertezze che, se non chiuse, rendono sbagliata una conclusione.
+    Ognuna con la fonte che la chiuderebbe.</p>
+  <div id="incertezze"></div>
+</section>
+</div>
+
+<div class="velo" id="velo" onclick="chiudi()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-label="Scheda operatore">
+  <button class="chiudi" onclick="chiudi()" aria-label="Chiudi">&times;</button>
+  <div id="drawer-c"></div>
+</aside>
+
+<script id="DATI" type="application/json">{
+ "generato": "13/08/2026",
+ "versione": "V3",
+ "vocabolari": {
+  "arene": {
+   "ai-transformation": "AI transformation company",
+   "boutique-ai": "Boutique AI di processo",
+   "consulenza-pivotata": "Consulenza innovazione pivotata su AI",
+   "system-integrator": "System integrator / managed services",
+   "product-studio": "Product studio / software house",
+   "sostituto": "Sostituto (prodotto, gestionale, modello diretto)",
+   "open-innovation": "Open innovation / venture client",
+   "venture-builder": "Venture builder / startup studio",
+   "ma-advisory": "Advisory M&A tech",
+   "finanza-agevolata": "Finanza agevolata e incentivi",
+   "investitore": "Investitore / non concorrente"
+  },
+  "origini": {
+   "innovazione": "Mestiere dell'innovazione",
+   "tecnologia": "Mestiere tecnico / ingegneria",
+   "consulenza": "Consulenza direzionale",
+   "software": "Software e prodotto",
+   "finanza": "Finanza e corporate finance",
+   "community": "Community e formazione"
+  },
+  "ingressi": {
+   "assessment-gratuito": "Assessment gratuito",
+   "formazione": "Formazione / academy",
+   "listino": "Listino self-service",
+   "bando": "Gara o bando pubblico",
+   "referral": "Referral e relazione",
+   "canale": "Canale terzo (rivenditore, commercialista, telco)",
+   "community": "Community / contenuti",
+   "evento": "Evento o programma",
+   "sottoscrizione": "Sottoscrizione corporate"
+  },
+  "ricavi": {
+   "fee-progetto": "Fee a progetto",
+   "retainer": "Retainer ricorrente",
+   "success-fee": "Compenso legato al risultato",
+   "equity": "Equity al posto del corrispettivo",
+   "equity-portafoglio": "Equity di portafoglio in aggiunta",
+   "licenza": "Licenza software / SaaS",
+   "sottoscrizione": "Sottoscrizione annuale corporate",
+   "quota-consortile": "Quota consortile",
+   "capital-gain": "Capital gain",
+   "managed-services": "Managed services ricorrenti"
+  },
+  "target": {
+   "micro": "Micro-impresa e professionisti",
+   "pmi": "PMI",
+   "midmarket": "Mid-market (40 mln+)",
+   "enterprise": "Enterprise e corporate",
+   "pa": "Pubblica amministrazione",
+   "startup": "Startup e scaleup",
+   "investitori": "Investitori e fondi"
+  },
+  "delivery": [
+   "Strategia",
+   "MVP / pilota",
+   "Produzione",
+   "Esercizio continuativo"
+  ],
+  "scala": [
+   "Nulla",
+   "Bassa",
+   "Media",
+   "Alta"
+  ],
+  "delivery_def": [
+   {
+    "eti": "Strategia",
+    "reg": "Consegna un documento o un programma. Non tocca codice ne' processi.",
+    "esce": "Analisi, roadmap, report, scouting, matching, accelerazione.",
+    "dopo": "Il cliente deve trovare qualcuno che costruisca. Tutto da appaltare.",
+    "chi": "Officine Innovazione, Plug and Play, Factory Plus, Growth Capital, Tinexta, I3P"
+   },
+   {
+    "eti": "MVP / pilota",
+    "reg": "Costruisce qualcosa che funziona ma non regge il carico reale.",
+    "esce": "Prototipo, proof of concept, pilota su un reparto o un processo.",
+    "dopo": "Serve una seconda gara per portarlo in esercizio. E' il momento in cui il fornitore puo' essere sostituito.",
+    "chi": "NOI, ZeroFive, Alan Advantage, Infinite Area, Nana Bianca"
+   },
+   {
+    "eti": "Produzione",
+    "reg": "Il sistema entra nei processi reali del cliente e ci resta.",
+    "esce": "Integrazione con ERP, CRM, gestionali. Gestione delle eccezioni, owner, collaudo.",
+    "dopo": "Il cliente lavora. Il fornitore ha dimostrato di saper chiudere.",
+    "chi": "Yellow Tech, Datapizza, m-ai, Cefriel, Rootbox, Lasting Dynamics"
+   },
+   {
+    "eti": "Esercizio continuativo",
+    "reg": "Lo mette in produzione e poi lo gestisce nel tempo, a ricavo ricorrente.",
+    "esce": "Managed services, manutenzione evolutiva, SLA, presidio.",
+    "dopo": "Il fornitore e' dentro. Sostituirlo costa piu' che tenerlo.",
+    "chi": "Lutech, TeamSystem, Zucchetti, GELLIFY, JAKALA, Webidoo"
+   }
+  ],
+  "territori": {
+   "costruzione": {
+    "eti": "Costruzione",
+    "presidi": 9,
+    "nota": "Il piu' conteso in assoluto: build, bauen, construir. Chi entra oggi entra in coda."
+   },
+   "missione": {
+    "eti": "Missione collettiva",
+    "presidi": 7,
+    "nota": "Il piu' affollato fra gli italiani. Credibile solo se la struttura societaria lo sostiene."
+   },
+   "scala": {
+    "eti": "Scala e leadership",
+    "presidi": 4,
+    "nota": "Territorio del superlativo. Difendibile solo da chi ha i numeri."
+   },
+   "risultato": {
+    "eti": "Risultato misurabile",
+    "presidi": 3,
+    "nota": "Sorprendentemente poco presidiato rispetto a quanto il mercato ne parla."
+   },
+   "competenza": {
+    "eti": "Competenza tecnica",
+    "presidi": 3,
+    "nota": "Presidiato da chi ha ingegneri veri. Non rivendicabile a parole."
+   },
+   "prossimita": {
+    "eti": "Prossimita' e relazione",
+    "presidi": 2,
+    "nota": "Contendibile a basso costo: presidiato solo da operatori senza peso di marca."
+   },
+   "velocita": {
+    "eti": "Velocita'",
+    "presidi": 2,
+    "nota": "Il piu' facile da capire per un imprenditore e il piu' rischioso da tenere."
+   },
+   "indipendenza": {
+    "eti": "Indipendenza del cliente",
+    "presidi": 1,
+    "nota": "Un solo presidio, francese. Obbliga a dichiarare una data di fine."
+   },
+   "prezzo-rischio": {
+    "eti": "Prezzo e rischio nella promessa",
+    "presidi": 0,
+    "nota": "Vuoto su 46 rilevazioni. Nessun precedente da copiare, nessun concorrente."
+   },
+   "canale": {
+    "eti": "Sei gia' dentro il software che usi",
+    "presidi": 2,
+    "nota": "Il territorio dei sostituti. Non si contende: si aggira o si usa come canale."
+   },
+   "nessuno": {
+    "eti": "Nessun territorio riconoscibile",
+    "presidi": 0,
+    "nota": "Chi non entra in un territorio condiviso non ne trova uno alternativo."
+   }
+  },
+  "tipi": {
+   "assessment": "Diagnosi e mappatura",
+   "formazione": "Formazione e academy",
+   "governance": "Policy, compliance, AI Act",
+   "progettazione": "Strategia e roadmap",
+   "sviluppo-agenti": "Sviluppo di agenti e automazioni",
+   "sviluppo-prodotto": "Sviluppo di prodotto su misura",
+   "piattaforma": "Piattaforma proprietaria a licenza",
+   "integrazione": "Integrazione sui sistemi esistenti",
+   "gestione": "Esercizio e managed services",
+   "scouting": "Scouting e matching con startup",
+   "venture-building": "Costruzione di imprese",
+   "advisory": "Advisory su capitale e M&A",
+   "talent": "Ricerca e inserimento di personale"
+  },
+  "linee_srv": {
+   "ai": "AI Adoption",
+   "oi": "Open Innovation",
+   "vb": "Venture Building",
+   "ma": "M&A buy-side",
+   "fuori": "Fuori dal nostro perimetro"
+  },
+  "capacita": [
+   "Non tocca codice",
+   "Integra strumenti di terzi",
+   "Sviluppa su stack altrui",
+   "Sviluppa tecnologia propria"
+  ],
+  "incasa": [
+   "Tutto in subappalto",
+   "Coordina, esegue poco",
+   "Esegue il grosso in casa",
+   "Interamente in casa"
+  ],
+  "profili": {
+   "ingegneri": "Ingegneri e sviluppatori",
+   "data": "Data scientist e ML",
+   "economics": "Economics e finance",
+   "design": "Designer",
+   "consulenti": "Consulenti",
+   "commerciali": "Commerciali e account",
+   "ricerca": "Ricercatori",
+   "formatori": "Formatori"
+  }
+ },
+ "operatori": [
+  {
+   "slug": "deploiable",
+   "nome": "Deploiable",
+   "noi": true,
+   "sito": "—",
+   "sede": "Italia",
+   "anno": 2026,
+   "team": 6,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 3,
+   "ai": 3,
+   "ma": 2,
+   "target": [
+    "pmi",
+    "midmarket",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "retainer",
+    "success-fee"
+   ],
+   "delivery": 1,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "parziale",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 0,
+   "payoff": "We build proof.",
+   "argomento": "Metodo di creazione d'impresa applicato all'AI: dall'ideazione al go-to-market.",
+   "meccanismo": "Relazione diretta e rete del CEO. Nessun ingresso di prodotto, nessun canale.",
+   "note": "Rebranding di WDA. Quattro linee dichiarate, MVP costruito in casa e passato a un tech partner per TRL 8-9.",
+   "nuovo": true,
+   "territorio": "prezzo-rischio",
+   "fonte": "—",
+   "fatturato": "non applicabile",
+   "prezzo_nota": "Nessun prezzo esposto. E' la scelta piu' contendibile che abbiamo davanti.",
+   "contro_noi": "Siete quattro persone con background economics che vendono AI. Chi ha costruito i vostri agenti? Fateci vedere un cliente in produzione.",
+   "contro_loro": "",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "economics",
+     "consulenti"
+    ],
+    "headcount": 6,
+    "headcount_mk": "D",
+    "capacita": 1,
+    "in_casa": 2,
+    "stack": [
+     "strumenti generalisti"
+    ],
+    "deploy": [
+     "non dichiarato"
+    ],
+    "proprietario": [
+     "metodologia lean startup applicata a qualunque verticale"
+    ],
+    "nota": "Tutto il team ha background economics e finance. Le competenze AI sono in costruzione. L'MVP si costruisce in casa, poi un tech partner porta a TRL 8-9. E' il punto in cui il modello si interrompe e il cliente cambia interlocutore."
+   },
+   "catalogo": [
+    {
+     "op": "deploiable",
+     "nome": "Open innovation su commessa",
+     "tipo": "scouting",
+     "linea": "oi",
+     "consegna": "Scouting startup per corporate venture clienting o acquisizione diretta",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "Comtel, Braga Moro, Cipierre, Marchiani, SFS",
+     "fonte": "interno",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "deploiable",
+     "nome": "Corporate venture building",
+     "tipo": "venture-building",
+     "linea": "vb",
+     "consegna": "Supporto allo sviluppo di un asset interno all'azienda",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "Stellantis (team innovation interno)",
+     "fonte": "interno",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "deploiable",
+     "nome": "AI adoption",
+     "tipo": "assessment",
+     "linea": "ai",
+     "consegna": "Diagnosi del processo che conviene toccare, poi MVP",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "nessun caso pubblicato",
+     "fonte": "interno",
+     "mk": "N",
+     "data": "08/2026"
+    },
+    {
+     "op": "deploiable",
+     "nome": "M&A buy-side",
+     "tipo": "advisory",
+     "linea": "ma",
+     "consegna": "Assistenza a chi compra",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "nessun mandato documentato",
+     "fonte": "interno",
+     "mk": "N",
+     "data": "08/2026"
+    },
+    {
+     "op": "deploiable",
+     "nome": "Posizionamento e lead generation di prodotto",
+     "tipo": "progettazione",
+     "linea": "fuori",
+     "consegna": "Rebranding, sito, strategia di posizionamento, gestione lead. La chiusura la fanno i sales del cliente",
+     "durata": "12 mesi",
+     "prezzo": "recurring fee + success fee sui lead",
+     "prova": "Marchiani Automation",
+     "fonte": "interno",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "datapizza",
+   "nome": "Datapizza",
+   "sito": "datapizza.tech",
+   "sede": "Milano",
+   "anno": 2021,
+   "team": 90,
+   "arena": "ai-transformation",
+   "origine": "community",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket",
+    "enterprise"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "licenza"
+   ],
+   "delivery": 2,
+   "ingresso": "community",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 3,
+   "payoff": "Vogliamo un'Italia competitiva nel Tech",
+   "argomento": "La consulenza tradizionale vende know-how, e con l'AI il know-how diventa commodity. Noi stiamo nel mezzo: studio dei processi piu' piattaforma neutrale.",
+   "meccanismo": "Community da 500mila persone come imbuto di acquisizione e di recruiting. Zero costo di lead.",
+   "note": "Serie A da 10 mln (Nextalia Ventures, 22/07/2026), primo capitale esterno. Fatturato quasi decuplicato in 3 anni, ~4 mln nel 2025. Clienti Allianz e Credem. Il round e' dichiaratamente per estendere l'offerta alle PMI e costruire una piattaforma di agenti.",
+   "nuovo": true,
+   "territorio": "missione",
+   "fonte": "datapizza.tech",
+   "fatturato": "~4 mln 2025 [S] · quasi decuplicato in 3 anni [D]",
+   "prezzo_nota": "Nessun listino pubblico [N]",
+   "contro_noi": "La consulenza tradizionale vende know-how, e con l'AI il know-how diventa commodity in fretta. Noi abbiamo 90 ingegneri e una piattaforma.",
+   "contro_loro": "Sono ingegneri con una community, non imprenditori: non hanno mai costruito un'impresa ne' portato un asset a exit. E il round di luglio dice che la piattaforma PMI e' ancora da fare.",
+   "segnali": [
+    {
+     "data": "22/07/2026",
+     "testo": "Serie A da 10 mln guidata da Nextalia Ventures, primo capitale esterno. Dichiarato: estendere l'offerta alle PMI",
+     "mk": "V"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri",
+     "data",
+     "commerciali"
+    ],
+    "headcount": 90,
+    "headcount_mk": "V",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "OpenAI",
+     "Anthropic",
+     "Gemini",
+     "modelli open source",
+     "RAG",
+     "agenti"
+    ],
+    "deploy": [
+     "integrazione sui sistemi del cliente"
+    ],
+    "proprietario": [
+     "Datapizza AI (suite di prodotti)",
+     "community da 500.000 persone"
+    ],
+    "nota": "Vendor-neutral dichiarato. Eta' media bassa per scelta: assumono chi ha appena finito la formazione su AI. La community e' insieme canale commerciale e bacino di reclutamento — e viene monetizzata due volte, con la formazione e con il placement."
+   },
+   "catalogo": [
+    {
+     "op": "datapizza",
+     "nome": "Analisi e mappatura dei processi",
+     "tipo": "assessment",
+     "linea": "ai",
+     "consegna": "Analisi dei processi e definizione della strategia di adozione",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "100+ aziende in portafoglio: 20 corporation, 80 fra PMI e startup",
+     "fonte": "datapizza.tech · Il Sole 24 Ore",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "datapizza",
+     "nome": "Percorsi di formazione e change management",
+     "tipo": "formazione",
+     "linea": "ai",
+     "consegna": "Sessioni pratiche in cui i dipendenti usano gli strumenti, mappatura delle competenze interne, azioni di change management",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "dichiarato come prima attivita' che fanno entrando",
+     "fonte": "datapizza.tech",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "datapizza",
+     "nome": "Sviluppo e messa in produzione di soluzioni AI",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "Progettazione e sviluppo di sistemi AI per contesti enterprise, integrati nei sistemi informativi esistenti",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "Allianz, Credem",
+     "fonte": "Forbes Italia 23/07/2026",
+     "mk": "V",
+     "data": "08/2026"
+    },
+    {
+     "op": "datapizza",
+     "nome": "Datapizza AI",
+     "tipo": "piattaforma",
+     "linea": "ai",
+     "consegna": "Suite proprietaria per agenti e RAG: interfacce, comportamento prevedibile, visibilita' end-to-end, orchestrazione dal PoC alla scala",
+     "durata": "licenza",
+     "prezzo": "non esposto",
+     "prova": "dichiarata integrabile e personalizzabile, con misura del ROI",
+     "fonte": "datapizza.tech",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "datapizza",
+     "nome": "Jobs · ricerca e inserimento di talenti tech",
+     "tipo": "talent",
+     "linea": "fuori",
+     "consegna": "Match fra aziende e talenti tech dalla community. Pagano sia la formazione sia l'assunzione",
+     "durata": "non dichiarata",
+     "prezzo": "fee sull'assunzione, cresce col livello inserito",
+     "prova": "120 programmatori assunti presso clienti",
+     "fonte": "Il Sole 24 Ore",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "datapizza",
+     "nome": "Verticale Manufacturing enterprise",
+     "tipo": "progettazione",
+     "linea": "ai",
+     "consegna": "Value proposition di AI Transformation costruita su un settore specifico",
+     "durata": "in costruzione",
+     "prezzo": "non esposto",
+     "prova": "assunzione aperta di un Sales Industry Leader Manufacturing",
+     "fonte": "datapizza.tech/jobs",
+     "mk": "V",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "yellow-tech",
+   "nome": "Yellow Tech",
+   "sito": "yellowtech.it",
+   "sede": "Milano",
+   "anno": 2024,
+   "team": 30,
+   "arena": "ai-transformation",
+   "origine": "tecnologia",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "licenza",
+    "retainer"
+   ],
+   "delivery": 2,
+   "ingresso": "formazione",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 3,
+   "payoff": "La AI transformation company di Milano",
+   "argomento": "Persone e processi avanzano insieme: assessment, formazione su tutta la popolazione, poi agenti in produzione sui processi ad alto impatto.",
+   "meccanismo": "Land-and-expand: la formazione entra a basso attrito, mappa i processi dall'interno e apre la vendita degli agenti. Ha fondato AIFIA per certificare la categoria in cui compete.",
+   "note": "Ricavi +1.105% nel 2025, obiettivo 6 mln nel 2027. 500+ organizzazioni, 300+ agenti in produzione, 20.000+ persone formate. Piattaforma proprietaria per il ciclo di adozione. Practice Governance & Compliance gia' costruita sull'AI Act.",
+   "nuovo": true,
+   "territorio": "scala",
+   "fonte": "yellowtech.it",
+   "fatturato": "+1.105% nel 2025 [V] · obiettivo 6 mln nel 2027 [D]",
+   "prezzo_nota": "Nessun listino [N]. Un agente su singolo processo: 4-8 settimane, quotato su misura [D]",
+   "contro_noi": "500 organizzazioni clienti, 300 agenti in produzione, 20.000 persone formate. Voi quanti agenti avete messo in produzione?",
+   "contro_loro": "Due anni di eta' e una crescita percentuale su base minima. La formazione e' un canale, non una competenza difendibile: la stanno commoditizzando loro stessi fondando l'associazione dei formatori.",
+   "segnali": [
+    {
+     "data": "06/2026",
+     "testo": "Pubblica la guida alla compliance AI Act e apre la practice Governance & Compliance",
+     "mk": "V"
+    },
+    {
+     "data": "2026",
+     "testo": "Fonda AIFIA, associazione italiana dei formatori di intelligenza artificiale",
+     "mk": "D"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri",
+     "formatori",
+     "data"
+    ],
+    "headcount": 30,
+    "headcount_mk": "D",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "OpenAI",
+     "Anthropic",
+     "Google",
+     "Meta",
+     "Mistral",
+     "RAG",
+     "vector database",
+     "self-hosted"
+    ],
+    "deploy": [
+     "tenant del cliente su Azure/AWS/GCP",
+     "on-premise"
+    ],
+    "proprietario": [
+     "piattaforma di gestione del ciclo di adozione",
+     "AIFIA (associazione fondata da loro)"
+    ],
+    "nota": "Multi-modello e vendor-agnostic dichiarato. Team dedicati di AI Engineer per ciascuna delle quattro practice. La piattaforma trasforma la consulenza in ricavo ricorrente: e' l'asset che gli altri della sua arena non hanno."
+   },
+   "catalogo": [
+    {
+     "op": "yellow-tech",
+     "nome": "AI Adoption Assessment",
+     "tipo": "assessment",
+     "linea": "ai",
+     "consegna": "Distribuzione dell'assessment su tutta la popolazione aziendale, report automatici con indicazioni operative, dati aggregati e benchmark di settore",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "minimo 50 rispondenti cross-funzionali dichiarato",
+     "fonte": "yellowtech.it/ai-adoption",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "AI Leadership",
+     "tipo": "formazione",
+     "linea": "ai",
+     "consegna": "Percorso per il management",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "parte dei 20.000+ formati",
+     "fonte": "yellowtech.it/ai-adoption",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "AI Upskilling",
+     "tipo": "formazione",
+     "linea": "ai",
+     "consegna": "Percorsi digitali con video, esercizi, quiz e tracking del completamento, su tutti i livelli",
+     "durata": "sei moduli combinabili",
+     "prezzo": "non esposto",
+     "prova": "20.000+ persone formate in 500+ organizzazioni",
+     "fonte": "yellowtech.it/ai-adoption",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Redazione AI Policy",
+     "tipo": "governance",
+     "linea": "ai",
+     "consegna": "Stesura della policy aziendale sull'uso dell'AI",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non nominata",
+     "fonte": "yellowtech.it/ai-adoption",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Programma AI Champion",
+     "tipo": "formazione",
+     "linea": "ai",
+     "consegna": "Costruzione di referenti interni che guidano l'adozione",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non nominata",
+     "fonte": "yellowtech.it/ai-adoption",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Piattaforma di adozione",
+     "tipo": "piattaforma",
+     "linea": "ai",
+     "consegna": "Gestione dell'intero ciclo di adozione: assessment, percorsi, dashboard per HR e management, benchmark",
+     "durata": "licenza",
+     "prezzo": "non esposto",
+     "prova": "dichiarata proprietaria",
+     "fonte": "yellowtech.it/ai-adoption",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Agenti · Finance & Document Automation",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "Ciclo documentale e finanziario: fatture XML da SDI, DDT, contratti, ordini d'acquisto, note spese, PEC",
+     "durata": "4-8 settimane per processo",
+     "prezzo": "quotato su misura",
+     "prova": "300+ agenti in produzione dichiarati sul totale delle practice",
+     "fonte": "yellowtech.it/ai-agents",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Agenti · Customer Operations",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "Automazione delle operazioni di servizio al cliente",
+     "durata": "4-8 settimane per processo",
+     "prezzo": "quotato su misura",
+     "prova": "Bocconi, Atlante, Nital, Growens fra i casi documentati",
+     "fonte": "yellowtech.it/ai-agents",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Agenti · Sales & Revenue",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "Automazione su vendite e ricavo",
+     "durata": "4-8 settimane per processo",
+     "prezzo": "quotato su misura",
+     "prova": "non disaggregata",
+     "fonte": "yellowtech.it/ai-agents",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "yellow-tech",
+     "nome": "Agenti · Governance & Compliance",
+     "tipo": "governance",
+     "linea": "ai",
+     "consegna": "AI Risk Assessment Agent, AI Registry Agent, Regulatory Change Monitor, GDPR-AI Compliance Agent. Valutazione dei sistemi rispetto all'AI Act, registro obbligatorio, DPIA",
+     "durata": "4-8 settimane per processo",
+     "prezzo": "quotato su misura",
+     "prova": "practice aperta con la guida AI Act pubblicata a giugno 2026",
+     "fonte": "yellowtech.it/ai-agents",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "m-ai",
+   "nome": "m-ai",
+   "sito": "m-ai.it",
+   "sede": "Bergamo",
+   "anno": 2025,
+   "team": 0,
+   "arena": "boutique-ai",
+   "origine": "tecnologia",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 2,
+   "ingresso": "assessment-gratuito",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 2,
+   "marcatura": "D",
+   "minaccia": 3,
+   "payoff": "Intelligenza artificiale su misura per le PMI italiane",
+   "argomento": "Saving tangibile e immediato nel back-office. Mezza giornata per business unit, quick win ad alto impatto e alta fattibilita'.",
+   "meccanismo": "Call gratuita, poi workshop a pagamento. Sei casi nominati con clienti industriali reali.",
+   "note": "Costituita marzo 2025. Clienti nominati: Tomatis Lamiere, Gualini Lamiere, SGI, Circet Italia, Energy Italy, MEF. Vende la promessa dichiarata di Deploiable, punto per punto, sul segmento piu' difficile.",
+   "nuovo": true,
+   "territorio": "prossimita",
+   "fonte": "m-ai.it",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "Assessment gratuito, poi mezza giornata per business unit. Prezzi non esposti [N]",
+   "contro_noi": "Sei casi documentati su PMI industriali vere, con saving misurato. Voi avete casi su AI o solo su innovazione?",
+   "contro_loro": "Diciassette mesi di eta', organico non esposto, nessun bilancio. Sono bravi sul singolo processo ma non sanno cosa farne dopo: nessuna capacita' di trasformare l'automazione in un asset.",
+   "segnali": [
+    {
+     "data": "02/2026",
+     "testo": "Caso Gualini Lamiere pubblicato: l'AI entra nell'ufficio tecnico",
+     "mk": "D"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri"
+    ],
+    "headcount": 0,
+    "headcount_mk": "N",
+    "capacita": 2,
+    "in_casa": 3,
+    "stack": [
+     "OCR",
+     "computer vision",
+     "NLP"
+    ],
+    "deploy": [
+     "integrazione sul gestionale del cliente"
+    ],
+    "proprietario": [],
+    "nota": "Organico e fatturato non esposti. La forza e' nei casi: sei processi industriali reali con clienti nominati, che e' esattamente cio' che manca a quasi tutti gli altri."
+   },
+   "catalogo": [
+    {
+     "op": "m-ai",
+     "nome": "Prima call conoscitiva",
+     "tipo": "assessment",
+     "linea": "ai",
+     "consegna": "Conoscenza dell'azienda, obiettivi, dove l'AI puo' incidere",
+     "durata": "una call",
+     "prezzo": "gratuito",
+     "prova": "ingresso dichiarato",
+     "fonte": "m-ai.it",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "m-ai",
+     "nome": "Mappatura processi e prioritizzazione",
+     "tipo": "assessment",
+     "linea": "ai",
+     "consegna": "Mezza giornata per business unit con i team operativi, raccolta dati reali, matrice impatto-fattibilita' per scegliere i quick win",
+     "durata": "mezza giornata per unit",
+     "prezzo": "non esposto",
+     "prova": "sei casi documentati",
+     "fonte": "m-ai.it",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "m-ai",
+     "nome": "Automazioni documentali",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "OCR avanzato che legge bolle e ordini da PDF e scansioni, popola il gestionale e verifica i codici articolo a database",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "Tomatis Lamiere, Gualini Lamiere",
+     "fonte": "m-ai.it",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "m-ai",
+     "nome": "Automazioni su contenuti tecnici e immagini",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "Generazione di manuali d'uso e manutenzione, catalogazione e tagging automatico di immagini",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "SGI, Circet Italia, Energy Italy, MEF",
+     "fonte": "m-ai.it",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "grownnectia",
+   "nome": "Grownnectia",
+   "sito": "grownnectia.com",
+   "sede": "Italia",
+   "anno": 2019,
+   "team": 0,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 2,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 1,
+   "ingresso": "assessment-gratuito",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 0,
+   "payoff": "",
+   "argomento": "AI Transition per PMI gia' digitalizzate: consulenza, formazione, sviluppo e accompagnamento in un solo percorso.",
+   "meccanismo": "Contenuti e assessment. Hackstorm come formato di open innovation per PMI.",
+   "note": "E' il concorrente che ha gia' fatto il pivot che Deploiable sta facendo: da open innovation a AI su PMI, con le stesse due linee. Zero clienti nominati.",
+   "nuovo": true,
+   "territorio": "prossimita",
+   "fonte": "grownnectia.com",
+   "fatturato": "non trovato [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Abbiamo gia' fatto il pivot che voi state facendo, e abbiamo un programma AI Transition strutturato per PMI.",
+   "contro_loro": "Zero clienti nominati su entrambe le linee. Hanno il nostro stesso problema di prova, con due anni di anticipo e nessuna soluzione.",
+   "segnali": [],
+   "archiviato": true,
+   "motivo_archivio": "Escluso dal set competitivo su decisione del committente: ritenuto in uscita dal mercato [D]. Nessuna evidenza indipendente raccolta a conferma o smentita [N]. Resta a registro perche' e' l'unico operatore che abbia gia' fatto il nostro stesso pivot — da open innovation a AI sulle PMI — con due anni di anticipo: se l'esito e' negativo, e' un dato sul nostro percorso, non su di loro.",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "cefriel",
+   "nome": "Cefriel",
+   "sito": "cefriel.com",
+   "sede": "Milano",
+   "anno": 1988,
+   "team": 0,
+   "arena": "consulenza-pivotata",
+   "origine": "tecnologia",
+   "oi": 2,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 2,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "D",
+   "minaccia": 2,
+   "payoff": "",
+   "argomento": "Centro di ricerca del Politecnico: competenza tecnica con la garanzia accademica.",
+   "meccanismo": "Marchio universitario e rete dei soci industriali.",
+   "note": "Uno dei tre soli operatori su 46 a presidiare il territorio del risultato misurabile. Sette clienti nominati. Punteggio 4 nello screening, nessuna scheda.",
+   "nuovo": true,
+   "territorio": "risultato",
+   "fonte": "cefriel.com",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "Non esposto [N]. Partecipante in 5 procedure lombarde, zero aggiudicazioni [V]",
+   "contro_noi": "Centro di ricerca del Politecnico con sette clienti nominati: la competenza tecnica e' garantita da un'universita'.",
+   "contro_loro": "Struttura di ricerca: tempi e modalita' accademiche, non commerciali. E in Lombardia partecipano alle gare senza vincerle.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ricerca",
+     "ingegneri",
+     "data"
+    ],
+    "headcount": 0,
+    "headcount_mk": "N",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "AI & Data"
+    ],
+    "deploy": [
+     "sistemi del cliente"
+    ],
+    "proprietario": [
+     "marchio e rete del Politecnico di Milano"
+    ],
+    "nota": "Centro di ricerca: la garanzia e' istituzionale. Uno dei tre soli operatori su 46 a presidiare il territorio verbale del risultato misurabile."
+   },
+   "catalogo": [
+    {
+     "op": "cefriel",
+     "nome": "AI & Data",
+     "tipo": "sviluppo-prodotto",
+     "linea": "ai",
+     "consegna": "Progetti di intelligenza artificiale e dati su commessa",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "sette clienti nominati",
+     "fonte": "cefriel.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "cefriel",
+     "nome": "Innovazione su commessa",
+     "tipo": "progettazione",
+     "linea": "oi",
+     "consegna": "Progetti di innovazione per grandi imprese, PMI e PA",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "partecipante in 5 procedure lombarde, zero aggiudicazioni",
+     "fonte": "open data Regione Lombardia",
+     "mk": "V",
+     "data": "08/2026"
+    },
+    {
+     "op": "cefriel",
+     "nome": "Formazione tecnica",
+     "tipo": "formazione",
+     "linea": "ai",
+     "consegna": "Percorsi su tecnologie e dati",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non disaggregata",
+     "fonte": "cefriel.com",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "jakala",
+   "nome": "JAKALA",
+   "sito": "jakala.com",
+   "sede": "Milano",
+   "anno": 2000,
+   "team": 0,
+   "arena": "system-integrator",
+   "origine": "consulenza",
+   "oi": 0,
+   "vb": 0,
+   "ai": 2,
+   "ma": 0,
+   "target": [
+    "midmarket",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "licenza"
+   ],
+   "delivery": 3,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 2,
+   "marcatura": "D",
+   "minaccia": 1,
+   "payoff": "From Knowledge to Performance",
+   "argomento": "AI Factory: dai dati al contesto alle decisioni, dentro un impianto strategy-technology-activation.",
+   "meccanismo": "Relazione enterprise e crescita per acquisizioni.",
+   "note": "Baricentro marketing e CX, non diagnosi di processo. Compratore seriale: potenziale cliente della linea M&A, non concorrente.",
+   "nuovo": true,
+   "territorio": "risultato",
+   "fonte": "jakala.com",
+   "fatturato": "non esposto sulle pagine lette [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "AI Factory su enterprise e PA, con casi reali di attivazione.",
+   "contro_loro": "Il baricentro e' marketing e customer experience, non diagnosi di processo. E in Lombardia: 5 procedure, zero aggiudicazioni.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "lutech",
+   "nome": "Lutech",
+   "sito": "lutech.group",
+   "sede": "Milano",
+   "anno": 2000,
+   "team": 6000,
+   "arena": "system-integrator",
+   "origine": "tecnologia",
+   "oi": 0,
+   "vb": 0,
+   "ai": 2,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "managed-services"
+   ],
+   "delivery": 3,
+   "ingresso": "bando",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "D",
+   "minaccia": 1,
+   "payoff": "",
+   "argomento": "Advisory, design, delivery e gestione: un solo fornitore dall'idea all'esercizio.",
+   "meccanismo": "L'advisory di adozione AI e' la porta d'ingresso alla vendita di delivery e managed services. Il ricavo vero e' a valle.",
+   "note": "6.000 professionisti, +22% ricavi. Clienti: Acquedotto Pugliese, Iren, Leonardo, CINECA, Consip. Incontro possibile solo in fase di diagnosi.",
+   "nuovo": true,
+   "territorio": "nessuno",
+   "fonte": "lutech.group",
+   "fatturato": "+22% ricavi anno su anno [D], valore assoluto non leggibile [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Seimila professionisti: advisory, delivery e gestione con un solo fornitore.",
+   "contro_loro": "L'advisory AI e' la porta d'ingresso ai managed services. Il cliente compra una diagnosi e si ritrova un contratto pluriennale di gestione.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "bip",
+   "nome": "BIP xTech",
+   "sito": "bipgroup.com",
+   "sede": "Milano",
+   "anno": 2003,
+   "team": 0,
+   "arena": "consulenza-pivotata",
+   "origine": "consulenza",
+   "oi": 2,
+   "vb": 0,
+   "ai": 3,
+   "ma": 1,
+   "target": [
+    "midmarket",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 2,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "S",
+   "minaccia": 2,
+   "payoff": "",
+   "argomento": "Consulenza di scala con practice tecnologica interna.",
+   "meccanismo": "Relazione enterprise consolidata.",
+   "note": "Punteggio limitato dalla verificabilita', non dalla rilevanza: sito non leggibile in fase di screening. Da rivedere.",
+   "nuovo": true,
+   "territorio": "nessuno",
+   "fonte": "bipgroup.com",
+   "fatturato": "non verificato [S]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Practice xTech con scala di consulenza vera.",
+   "contro_loro": "Punteggio limitato dalla verificabilita': il sito non era leggibile in fase di screening e non esiste un caso pubblicato. Da rivedere prima di temerli.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "bcg-x",
+   "nome": "BCG X",
+   "sito": "bcg.com/x",
+   "sede": "Milano",
+   "anno": 2022,
+   "team": 3000,
+   "arena": "consulenza-pivotata",
+   "origine": "consulenza",
+   "oi": 0,
+   "vb": 3,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "enterprise"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 2,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 2,
+   "marcatura": "D",
+   "minaccia": 1,
+   "payoff": "",
+   "argomento": "AI e venture building come practice dello stesso studio strategico.",
+   "meccanismo": "Relazione al vertice sulle Fortune 500.",
+   "note": "Segmento sopra a quello di Deploiable. Rileva come modello: il Forward Deployed Engineer sta entrando in Italia, provato solo da annunci di lavoro.",
+   "nuovo": true,
+   "territorio": "costruzione",
+   "fonte": "bcg.com",
+   "fatturato": "3.000+ esperti in 80 citta' [D]",
+   "prezzo_nota": "Fee premium, non esposta [N]",
+   "contro_noi": "AI e venture building come practice dello stesso studio strategico.",
+   "contro_loro": "Segmento Fortune 500: non competono sulle nostre gare. Il presidio italiano e' provato solo da annunci di lavoro.",
+   "segnali": [
+    {
+     "data": "2026",
+     "testo": "Assume Forward Deployed AI Engineer in Italia: il modello FDE entra nel mercato",
+     "mk": "S"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "aiwonder",
+   "nome": "AIWONDER",
+   "sito": "aiwonder.it",
+   "sede": "Italia",
+   "anno": 2025,
+   "team": 0,
+   "arena": "boutique-ai",
+   "origine": "tecnologia",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 2,
+   "ingresso": "assessment-gratuito",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 2,
+   "argomento": "Adozione AI a partire dal processo.",
+   "meccanismo": "Assessment d'ingresso.",
+   "note": "Costituita da 16 mesi. Terzo esempio della stessa formula: la barriera d'ingresso su questa linea e' prossima a zero.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "nessuno",
+   "fonte": "aiwonder.it",
+   "fatturato": "non trovato [N]",
+   "prezzo_nota": "Assessment gratuito [D]",
+   "contro_noi": "Siamo piu' rapidi e costiamo meno.",
+   "contro_loro": "Sedici mesi di eta', nessun caso pubblicato. E' la prova che chiunque puo' entrare, non che siano bravi.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "zerofive-iconico",
+   "nome": "ZeroFive.ai + Iconico",
+   "sito": "zerofive.ai",
+   "sede": "Roma",
+   "anno": 2024,
+   "team": 0,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 2,
+   "vb": 3,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket",
+    "startup"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "retainer"
+   ],
+   "delivery": 1,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 3,
+   "payoff": "",
+   "argomento": "Adozione AI piu' progettazione di modelli operativi aumentati, accanto a validazione di prodotto e go-to-market.",
+   "meccanismo": "Autorevolezza personale del fondatore e contenuti.",
+   "note": "E' la combinazione esatta di Deploiable — consulenza d'innovazione, AI adoption e validazione/go-to-market — guidata da Fabio Lalli, con 25+ anni di esperienza e un exit. Non compare in nessuno dei 93.",
+   "nuovo": true,
+   "territorio": "nessuno",
+   "fonte": "zerofive.ai",
+   "fatturato": "non trovato [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Venticinque anni di prodotti digitali e un exit alle spalle. Voi il vostro primo prodotto lo dovete ancora vendere.",
+   "contro_loro": "Struttura personale, non industriale: la capacita' e' quella di un fondatore, non di un team. Non scala oltre il numero di ore che lui puo' mettere.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "rootbox",
+   "nome": "Rootbox",
+   "sito": "werootbox.com",
+   "sede": "Italia",
+   "anno": 2023,
+   "team": 0,
+   "arena": "product-studio",
+   "origine": "tecnologia",
+   "oi": 0,
+   "vb": 1,
+   "ai": 2,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket",
+    "startup"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "retainer"
+   ],
+   "delivery": 3,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 2,
+   "payoff": "A purpose-driven product factory nestled in the heart of Italy",
+   "argomento": "Product strategy, design system, engineering e applied AI conforme UE, con sovranita' del dato.",
+   "meccanismo": "Portfolio e passaparola nel mondo del prodotto digitale. Nessun canale che intersechi il mondo innovazione.",
+   "note": "L'archetipo della categoria che sette angoli su sette non possono trovare: non fa gare, non e' nei censimenti, non parla agli eventi di innovazione. Prende lo stesso budget nel momento in cui il cliente decide di costruire. Per Deploiable e' fornitore prima che concorrente: sta a valle dell'MVP.",
+   "nuovo": true,
+   "territorio": "competenza",
+   "fonte": "werootbox.com",
+   "fatturato": "non trovato [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Noi il prodotto lo portiamo in produzione. Voi fino a dove arrivate?",
+   "contro_loro": "Non hanno metodo di impresa: costruiscono cio' che gli viene chiesto. Nessuna capacita' di dire al cliente cosa vale la pena costruire.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri",
+     "design"
+    ],
+    "headcount": 0,
+    "headcount_mk": "N",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "AI conforme UE",
+     "sovranita' del dato"
+    ],
+    "deploy": [
+     "infrastruttura del cliente"
+    ],
+    "proprietario": [],
+    "nota": "Product factory: la competenza e' tecnica e di design, non di impresa. Costruisce cio' che gli viene chiesto. Per noi e' fornitore a valle dell'MVP prima che concorrente."
+   },
+   "catalogo": [
+    {
+     "op": "rootbox",
+     "nome": "Product Strategy",
+     "tipo": "progettazione",
+     "linea": "fuori",
+     "consegna": "Direzione di prodotto con orizzonte di lungo periodo",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "nessun cliente nominato",
+     "fonte": "werootbox.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "rootbox",
+     "nome": "Experience & Design Systems",
+     "tipo": "sviluppo-prodotto",
+     "linea": "fuori",
+     "consegna": "Design system inclusivi e accessibili",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "nessun cliente nominato",
+     "fonte": "werootbox.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "rootbox",
+     "nome": "Engineering & Delivery",
+     "tipo": "sviluppo-prodotto",
+     "linea": "fuori",
+     "consegna": "Costruzione con attenzione a qualita', resilienza e impronta digitale",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "nessun cliente nominato",
+     "fonte": "werootbox.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "rootbox",
+     "nome": "Applied AI",
+     "tipo": "integrazione",
+     "linea": "ai",
+     "consegna": "Intelligenza trasparente e conforme UE, con sovranita' del dato e controllo del cliente",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "nessun cliente nominato",
+     "fonte": "werootbox.com",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "lasting-dynamics",
+   "nome": "Lasting Dynamics",
+   "sito": "lastingdynamics.com",
+   "sede": "Italia",
+   "anno": 2018,
+   "team": 0,
+   "arena": "product-studio",
+   "origine": "tecnologia",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "midmarket",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 3,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 2,
+   "marcatura": "S",
+   "minaccia": 2,
+   "argomento": "AI su misura per settori regolamentati, con approccio GDPR-first e conoscenza del quadro normativo italiano.",
+   "meccanismo": "Ranking di settore e portfolio verticale su finance, sanita' e PA.",
+   "note": "Occupa gia' il territorio della conformita' applicata all'AI, che e' quello aperto dall'AI Act. Non e' nei 93.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "competenza",
+   "fonte": "lastingdynamics.com",
+   "fatturato": "non verificato [S]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "AI su misura per settori regolamentati, con approccio GDPR-first: il quadro normativo italiano lo conosciamo.",
+   "contro_loro": "Fornitore tecnico: entra quando la decisione e' gia' presa, non aiuta a prenderla.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri"
+    ],
+    "headcount": 0,
+    "headcount_mk": "N",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "AI custom",
+     "GDPR-first",
+     "DPIA",
+     "NIS2"
+    ],
+    "deploy": [
+     "settori regolamentati"
+    ],
+    "proprietario": [],
+    "nota": "Occupa gia' il territorio della conformita' applicata all'AI — quello che l'AI Act ha appena aperto — con competenza tecnica vera su finance, sanita' e PA."
+   },
+   "catalogo": [
+    {
+     "op": "lasting-dynamics",
+     "nome": "AI custom per settori regolamentati",
+     "tipo": "sviluppo-prodotto",
+     "linea": "ai",
+     "consegna": "Sistemi AI su misura con approccio GDPR-first, DPIA e conformita' NIS2 integrate dalle prime fasi",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "posizionamento su finance, sanita' e PA",
+     "fonte": "sectorpunk.com (ranking di settore)",
+     "mk": "S",
+     "data": "08/2026"
+    },
+    {
+     "op": "lasting-dynamics",
+     "nome": "Software su misura",
+     "tipo": "sviluppo-prodotto",
+     "linea": "fuori",
+     "consegna": "Sviluppo custom con conoscenza del quadro normativo italiano: Codice dei Contratti Pubblici, linee guida AGID, SDI e FatturaPA",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non nominati",
+     "fonte": "sectorpunk.com",
+     "mk": "S",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "bending-spoons",
+   "nome": "Bending Spoons",
+   "sito": "bendingspoons.com",
+   "sede": "Milano",
+   "anno": 2013,
+   "team": 0,
+   "arena": "product-studio",
+   "origine": "software",
+   "oi": 0,
+   "vb": 0,
+   "ai": 2,
+   "ma": 3,
+   "target": [
+    "enterprise"
+   ],
+   "ricavo": [
+    "licenza",
+    "capital-gain"
+   ],
+   "delivery": 3,
+   "ingresso": "listino",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 0,
+   "argomento": "Compra software e lo gestisce meglio di chi lo ha costruito.",
+   "meccanismo": "Acquisizioni.",
+   "note": "Non concorrente, ma il riferimento italiano di cosa significa portare un prodotto a scala. Compratore seriale: e' un cliente possibile della linea M&A, non un rivale.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "scala",
+   "fonte": "bendingspoons.com",
+   "fatturato": "non rilevato in questa tornata [N]",
+   "prezzo_nota": "A listino sui prodotti [V]",
+   "contro_noi": "",
+   "contro_loro": "",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "teamsystem",
+   "nome": "TeamSystem",
+   "sito": "teamsystem.com",
+   "sede": "Pesaro",
+   "anno": 1979,
+   "team": 0,
+   "arena": "sostituto",
+   "origine": "software",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "micro",
+    "pmi",
+    "midmarket"
+   ],
+   "ricavo": [
+    "licenza",
+    "retainer"
+   ],
+   "delivery": 3,
+   "ingresso": "canale",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 3,
+   "payoff": "",
+   "argomento": "L'AI e' gia' dentro il software che usi. Non devi ingaggiare nessuno.",
+   "meccanismo": "Arriva all'imprenditore attraverso il commercialista e il consulente del lavoro, dentro un abbonamento gia' pagato. Costo di acquisizione zero.",
+   "note": "Oltre 2 milioni di clienti. AI integrata su tutta la suite verticale: commercialisti, legali, HR, hospitality, PEC, ERP. TeamSystem AI Agent dichiara 60 milioni di predizioni negli ultimi 12 mesi. Fatture in Cloud da 4 a 51 euro al mese. E' il canale che decide se la PMI comprera' mai da un consulente.",
+   "nuovo": true,
+   "territorio": "canale",
+   "fonte": "teamsystem.com",
+   "fatturato": "oltre 2 milioni di clienti [D]",
+   "prezzo_nota": "Fatture in Cloud da 4 a 51 euro/mese [V]. Integrazione AI custom su gestionale: 5.000-25.000 una tantum piu' 200-1.500/mese di retainer [S]",
+   "contro_noi": "L'AI e' gia' dentro il software che l'azienda paga, e gliela spiega il suo commercialista. Perche' dovrebbe ingaggiare un consulente?",
+   "contro_loro": "L'AI nel gestionale automatizza cio' che il gestionale gia' vede: contabilita', paghe, documenti. Non tocca il processo industriale, non produce un asset e non risponde all'AI Act sui sistemi che l'azienda usa fuori dal gestionale.",
+   "segnali": [
+    {
+     "data": "2026",
+     "testo": "TeamSystem AI Agent dichiara 60 milioni di predizioni negli ultimi 12 mesi",
+     "mk": "D"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri",
+     "commerciali"
+    ],
+    "headcount": 0,
+    "headcount_mk": "N",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "AI dentro la suite gestionale"
+    ],
+    "deploy": [
+     "cloud proprietario"
+    ],
+    "proprietario": [
+     "TeamSystem AI Agent",
+     "Fatture in Cloud",
+     "TeamSystem Enterprise Cloud",
+     "Danea"
+    ],
+    "nota": "Non vende AI: vende software che ha l'AI dentro. La competenza decisiva non e' tecnica ma distributiva — la rete di commercialisti e consulenti del lavoro, che e' il canale attraverso cui la PMI italiana compra qualunque cosa."
+   },
+   "catalogo": [
+    {
+     "op": "teamsystem",
+     "nome": "AI dentro il gestionale di studio",
+     "tipo": "integrazione",
+     "linea": "ai",
+     "consegna": "Modulo AI e automazione contabile per commercialisti e consulenti del lavoro: monitoraggio normativo, segnalazione di modifiche, azioni correttive",
+     "durata": "incluso nella licenza",
+     "prezzo": "dentro l'abbonamento",
+     "prova": "oltre 2 milioni di clienti sul gruppo",
+     "fonte": "teamsystem.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "teamsystem",
+     "nome": "AI dentro l'ERP",
+     "tipo": "integrazione",
+     "linea": "ai",
+     "consegna": "ERP potenziato dall'AI, controllo di gestione predittivo",
+     "durata": "incluso nella licenza",
+     "prezzo": "dentro l'abbonamento",
+     "prova": "TeamSystem AI Agent: 60 milioni di predizioni in 12 mesi",
+     "fonte": "teamsystem.com · lucasammarco.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "teamsystem",
+     "nome": "Fatture in Cloud",
+     "tipo": "piattaforma",
+     "linea": "ai",
+     "consegna": "Gestionale per microimprese e forfettari con AI nella riconciliazione bancaria",
+     "durata": "abbonamento",
+     "prezzo": "da 4 a 51 euro al mese",
+     "prova": "listino pubblico",
+     "fonte": "lucasammarco.com",
+     "mk": "V",
+     "data": "08/2026"
+    },
+    {
+     "op": "teamsystem",
+     "nome": "Verticali con AI integrata",
+     "tipo": "piattaforma",
+     "linea": "ai",
+     "consegna": "Studi legali, HR, hospitality, gestione PEC: ciascuno con la propria AI",
+     "durata": "abbonamento",
+     "prezzo": "a listino per verticale",
+     "prova": "suite piu' estesa del mercato italiano per copertura verticale",
+     "fonte": "teamsystem.com",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "zucchetti",
+   "nome": "Zucchetti",
+   "sito": "zucchetti.it",
+   "sede": "Lodi",
+   "anno": 1978,
+   "team": 0,
+   "arena": "sostituto",
+   "origine": "software",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "micro",
+    "pmi",
+    "midmarket"
+   ],
+   "ricavo": [
+    "licenza",
+    "retainer"
+   ],
+   "delivery": 3,
+   "ingresso": "canale",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 3,
+   "argomento": "Trinity AI: assistere, arricchire, automatizzare, dentro il gestionale che l'azienda ha gia'.",
+   "meccanismo": "Rete di rivenditori e studi professionali.",
+   "note": "Modello Trinity AI su Mago4 (circa 11.000 aziende italiane) e Ago Infinity per i commercialisti. Il 28% delle aziende italiane ha gia' AI nel gestionale, secondo SDA Bocconi per AssoSoftware 2026.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "canale",
+   "fonte": "zucchetti.it",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "A listino tramite rivenditori [S]",
+   "contro_noi": "Trinity AI e' gia' su Mago4, che 11.000 aziende italiane hanno gia'.",
+   "contro_loro": "Stesso limite di TeamSystem: l'AI arriva dove arriva il gestionale. Il perimetro fuori dall'ERP resta scoperto ed e' quello dove sta il valore.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "modelli-diretti",
+   "nome": "I modelli, venduti diretti",
+   "sito": "—",
+   "sede": "—",
+   "anno": 2022,
+   "team": 0,
+   "arena": "sostituto",
+   "origine": "software",
+   "oi": 0,
+   "vb": 0,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "micro",
+    "pmi",
+    "midmarket",
+    "enterprise"
+   ],
+   "ricavo": [
+    "licenza"
+   ],
+   "delivery": 2,
+   "ingresso": "listino",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 3,
+   "argomento": "Il modello costa 20-30 euro a persona al mese e non richiede un progetto.",
+   "meccanismo": "Adozione dal basso, senza passare da nessun fornitore. L'Osservatorio Polimi misura il 74% dell'uso AI nelle PMI fuori dal perimetro aziendale.",
+   "note": "Non e' un operatore ma e' il primo concorrente di ogni progetto di AI adoption: il budget se ne va in licenze prima che qualcuno venda un assessment. Va nel registro come categoria, altrimenti la mappa mente.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "canale",
+   "fonte": "—",
+   "fatturato": "—",
+   "prezzo_nota": "20-30 euro per persona al mese, a listino pubblico [V]",
+   "contro_noi": "Il modello costa quanto un abbonamento e non richiede nessun progetto. Il 74% dell'uso AI nelle PMI avviene gia' cosi'.",
+   "contro_loro": "Adozione dal basso senza governo: e' esattamente la shadow AI che dal 2 agosto 2026 espone l'azienda agli obblighi dell'AI Act senza che nessuno se ne stia occupando.",
+   "segnali": [
+    {
+     "data": "02/08/2026",
+     "testo": "Con l'applicazione generale dell'AI Act, l'uso non governato diventa un rischio sanzionabile",
+     "mk": "V"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "webidoo",
+   "nome": "Webidoo",
+   "sito": "webidoo.com",
+   "sede": "Milano",
+   "anno": 2016,
+   "team": 0,
+   "arena": "sostituto",
+   "origine": "software",
+   "oi": 1,
+   "vb": 0,
+   "ai": 2,
+   "ma": 3,
+   "target": [
+    "micro",
+    "pmi"
+   ],
+   "ricavo": [
+    "licenza"
+   ],
+   "delivery": 3,
+   "ingresso": "canale",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 2,
+   "marcatura": "V",
+   "minaccia": 2,
+   "argomento": "Le piccole imprese ora hanno agenti AI: non devono assumere nessuno.",
+   "meccanismo": "Distribuzione via TIM, Nexi ed Esprinet, dentro la fattura di un fornitore che il cliente ha gia'.",
+   "note": "Listino pubblico in dollari, 86/65 al mese. 25 mln raccolti nel 2026. Gia' riclassificato correttamente come sostituto nella V2.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "competenza",
+   "fonte": "webidoo.com",
+   "fatturato": "18 mln $ ricavi 2025 [D] · 25 mln $ raccolti nel 2026 [V]",
+   "prezzo_nota": "Bundle Jooice 86 $/mese, 65 $/mese in annuale; moduli 9-38 $/mese [V]",
+   "contro_noi": "Le piccole imprese hanno gia' gli agenti AI dentro un abbonamento: non devono ingaggiare nessuno.",
+   "contro_loro": "Prodotto standardizzato sulla micro-impresa. Numero di PMI paganti, churn e ARPU non esistono in nessuna fonte aperta.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "gellify",
+   "nome": "GELLIFY",
+   "sito": "gellify.com",
+   "sede": "Bologna",
+   "anno": 2017,
+   "team": 133,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 3,
+   "ai": 3,
+   "ma": 1,
+   "target": [
+    "midmarket",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 3,
+   "ingresso": "bando",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 3,
+   "argomento": "Le nostre credenziali le pubblica il committente. E abbiamo delivery, non solo advisory.",
+   "meccanismo": "Gare e accordi quadro con committenti istituzionali, piu' veicoli in societa' con terzi.",
+   "note": "L'unico che copre tutte e quattro le linee con veicoli reali. 18,5 mln di ricavi 2024, 133 dipendenti. Lotto dell'accordo quadro Gruppo FS da 8,8 mln. Punto debole: nessun case study nominativo di cliente corporate privato.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "costruzione",
+   "fonte": "gellify.com",
+   "fatturato": "18.565.249 euro ricavi 2024, utile 1.006.572, 133 dipendenti [V]",
+   "prezzo_nota": "Nessun listino [N]. Accordo quadro Gruppo FS da 8,8 mln su 3 anni [V]; 6 contratti pubblici per 424.705 euro [S]",
+   "contro_noi": "Le nostre credenziali le pubblica il committente: FS e CDP ci nominano sui propri canali. E abbiamo 133 persone con delivery tecnico interno.",
+   "contro_loro": "Nessun case study nominativo di cliente corporate privato: le referenze sono quasi tutte pubbliche o istituzionali. La holding deposita 202.867 euro di ricavi e -216.899 nel 2024.",
+   "segnali": [
+    {
+     "data": "11/2025",
+     "testo": "Bianco Ventures con Deloitte e Arad, pre-money 4.070.000 euro",
+     "mk": "V"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "ingegneri",
+     "consulenti",
+     "data"
+    ],
+    "headcount": 133,
+    "headcount_mk": "V",
+    "capacita": 3,
+    "in_casa": 3,
+    "stack": [
+     "agentic factory",
+     "piattaforme digitali"
+    ],
+    "deploy": [
+     "sistemi del cliente"
+    ],
+    "proprietario": [
+     "Venture Box",
+     "Bianco Ventures (con Deloitte e Arad)"
+    ],
+    "nota": "ATECO 62201 sull'entita' operativa: e' una societa' di consulenza informatica con CTO in organico, non uno studio di advisory. E' l'unico del panel che copra tutte e quattro le nostre linee con veicoli reali."
+   },
+   "catalogo": [
+    {
+     "op": "gellify",
+     "nome": "Strategy & AI Transformation",
+     "tipo": "progettazione",
+     "linea": "ai",
+     "consegna": "Strategia di trasformazione con l'AI come baricentro",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "quattro delle sei linee di servizio sono esplicitamente AI",
+     "fonte": "gellify.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "gellify",
+     "nome": "Data & AI",
+     "tipo": "integrazione",
+     "linea": "ai",
+     "consegna": "Dati e intelligenza artificiale sui sistemi del cliente",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non disaggregata",
+     "fonte": "gellify.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "gellify",
+     "nome": "Digital Platforms · agentic factory",
+     "tipo": "sviluppo-agenti",
+     "linea": "ai",
+     "consegna": "Costruzione di piattaforme e agenti",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non disaggregata",
+     "fonte": "gellify.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "gellify",
+     "nome": "Ecosystem & network",
+     "tipo": "scouting",
+     "linea": "oi",
+     "consegna": "Rete proprietaria di open innovation che collega startup, corporate e innovation manager",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "due acceleratori CDP; lotto accordo quadro Gruppo FS",
+     "fonte": "gellify.com · cdpventurecapital.it",
+     "mk": "V",
+     "data": "08/2026"
+    },
+    {
+     "op": "gellify",
+     "nome": "AI-native venture building",
+     "tipo": "venture-building",
+     "linea": "vb",
+     "consegna": "Creazione di imprese AI-native su commessa e in proprio",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "3 venture builder costruiti, 15+ venture create (dichiarato)",
+     "fonte": "gellify.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "gellify",
+     "nome": "Creative Experience",
+     "tipo": "sviluppo-prodotto",
+     "linea": "fuori",
+     "consegna": "Esperienza e design",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "non disaggregata",
+     "fonte": "gellify.com",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "plug-and-play",
+   "nome": "Plug and Play Italy",
+   "sito": "plugandplaytechcenter.com",
+   "sede": "Milano",
+   "anno": 2019,
+   "team": 0,
+   "arena": "open-innovation",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 0,
+   "ai": 1,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "investitori"
+   ],
+   "ricavo": [
+    "sottoscrizione",
+    "equity-portafoglio"
+   ],
+   "delivery": 0,
+   "ingresso": "sottoscrizione",
+   "prezzo": "parziale",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 2,
+   "argomento": "Le uniche referenze confermate dal cliente sul dominio del cliente, e una sottoscrizione che occupa il budget ricorrente.",
+   "meccanismo": "Quota annuale corporate: Gold 200.000 dollari, White 100.000.",
+   "note": "Fatturato italiano fermo da tre esercizi entro l'1%. Nessuna referenza cliente-confermata da quasi due anni.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "scala",
+   "fonte": "plugandplaytechcenter.com",
+   "fatturato": "3.852.542 euro 2024 [S] · fermo entro l'1% da tre esercizi",
+   "prezzo_nota": "Sottoscrizione Gold 200.000 $/anno, White 100.000 $/anno [D], cifre globali non italiane. 3 contratti pubblici per 678.941 euro, il piu' alto 425.186 [S]",
+   "contro_noi": "Le uniche referenze del mercato confermate dal cliente sul dominio del cliente: Marelli, UniCredit, Nexi, A2A, Amplifon.",
+   "contro_loro": "Fatturato italiano fermo da tre esercizi mentre il presidio passava da tre a cinque sedi, e nessuna referenza cliente-confermata da quasi due anni.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "seedble",
+   "nome": "Seedble",
+   "sito": "seedble.com",
+   "sede": "Roma",
+   "anno": 2015,
+   "team": 0,
+   "arena": "open-innovation",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 1,
+   "ai": 2,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "licenza"
+   ],
+   "delivery": 1,
+   "ingresso": "listino",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 3,
+   "argomento": "Comprare da noi non richiede una trattativa: il prezzo e' esposto.",
+   "meccanismo": "Listino pubblico sul percorso d'ingresso, poi risalita.",
+   "note": "Unico del campione a esporre il prezzo di un servizio di innovazione: 800 e 3.000 euro. Ma 22 loghi e zero casi con obiettivo e risultato, e l'ultimo bilancio reperibile e' fermo al 2021.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "missione",
+   "fonte": "seedble.com",
+   "fatturato": "781.551 euro, ultimo bilancio reperibile fermo al 2021 [S]",
+   "prezzo_nota": "Inspiration Session 800 euro + IVA; percorso ETP 3.000 euro + IVA, 60 giorni [D]. Due CIG pubblici da 130.000 e 105.000 euro [S]",
+   "contro_noi": "Comprare da noi non richiede una trattativa: il prezzo e' sul sito.",
+   "contro_loro": "Ventidue loghi e zero casi con obiettivo e risultato. L'ultimo bilancio reperibile e' del 2021.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": {
+    "composizione": [
+     "consulenti"
+    ],
+    "headcount": 0,
+    "headcount_mk": "N",
+    "capacita": 1,
+    "in_casa": 2,
+    "stack": [],
+    "deploy": [
+     "non applicabile"
+    ],
+    "proprietario": [
+     "Rocket Lab",
+     "BLENDX (societa' separata)"
+    ],
+    "nota": "Nessuna evidenza di capacita' di sviluppo interna. L'unica venture costruita e' la propria. Il valore e' nel formato commerciale — sono gli unici a esporre il prezzo."
+   },
+   "catalogo": [
+    {
+     "op": "seedble",
+     "nome": "Inspiration Session",
+     "tipo": "formazione",
+     "linea": "oi",
+     "consegna": "Sessione introduttiva",
+     "durata": "una sessione",
+     "prezzo": "800 euro + IVA",
+     "prova": "prezzo esposto sul sito",
+     "fonte": "seedble.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "seedble",
+     "nome": "Emerging Tech Program (ETP)",
+     "tipo": "assessment",
+     "linea": "ai",
+     "consegna": "Analisi dei bisogni, tre workshop tecnologici, sessione col management, report",
+     "durata": "60 giorni",
+     "prezzo": "3.000 euro + IVA",
+     "prova": "unico prezzo pubblico su un servizio d'innovazione in tutto il panel",
+     "fonte": "seedble.com",
+     "mk": "D",
+     "data": "08/2026"
+    },
+    {
+     "op": "seedble",
+     "nome": "Rocket Lab",
+     "tipo": "scouting",
+     "linea": "oi",
+     "consegna": "Scouting, call for startup, hackathon, PoC, accelerazione",
+     "durata": "non dichiarata",
+     "prezzo": "non esposto",
+     "prova": "22 loghi, zero casi con obiettivo e risultato",
+     "fonte": "seedble.com",
+     "mk": "N",
+     "data": "08/2026"
+    },
+    {
+     "op": "seedble",
+     "nome": "BLENDX",
+     "tipo": "piattaforma",
+     "linea": "fuori",
+     "consegna": "Licenza software in abbonamento, societa' separata",
+     "durata": "abbonamento",
+     "prezzo": "non esposto",
+     "prova": "venture propria",
+     "fonte": "seedble.com",
+     "mk": "D",
+     "data": "08/2026"
+    }
+   ],
+   "mappato": true
+  },
+  {
+   "slug": "officine-innovazione",
+   "nome": "Officine Innovazione (Deloitte)",
+   "sito": "deloitte.com",
+   "sede": "Milano",
+   "anno": 2018,
+   "team": 95,
+   "arena": "open-innovation",
+   "origine": "consulenza",
+   "oi": 3,
+   "vb": 2,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "pa",
+    "startup"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 0,
+   "ingresso": "bando",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 2,
+   "marcatura": "S",
+   "minaccia": 2,
+   "argomento": "Il fornitore e' Deloitte.",
+   "meccanismo": "Marchio ombrello e rete del network.",
+   "note": "20 procedure lombarde, zero aggiudicazioni. Catalogo fermo al 2021, nessuna linea AI, nessun metodo con nome proprio. E' l'unico grande operatore senza metodologia proprietaria nominata.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "costruzione",
+   "fonte": "deloitte.com",
+   "fatturato": "12,59 mln ricavi 2025, 95 dipendenti [S]",
+   "prezzo_nota": "Nessun listino [N]. Partecipante in 20 procedure lombarde, aggiudicataria in zero [V]",
+   "contro_noi": "Il fornitore e' Deloitte.",
+   "contro_loro": "Venti procedure lombarde e zero aggiudicazioni. Catalogo fermo al 2021, nessuna linea AI, nessun metodo con nome proprio: e' l'unico grande operatore senza metodologia nominata.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "cariplo-factory",
+   "nome": "Cariplo Factory / Factory Plus",
+   "sito": "factoryplus.eu",
+   "sede": "Milano",
+   "anno": 2016,
+   "team": 0,
+   "arena": "open-innovation",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 2,
+   "ai": 1,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "enterprise",
+    "pa",
+    "startup"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 0,
+   "ingresso": "evento",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 2,
+   "argomento": "La rete istituzionale che nessun indipendente ha: CDP, Intesa Sanpaolo, Regione Lombardia.",
+   "meccanismo": "Committenza del sistema fondazionale e gestione di programmi per terzi.",
+   "note": "18.065 euro di utile su 5,6 mln di produzione: gira i costi dei programmi senza catturare valore. Nessun team di sviluppo interno: la delivery tecnica e' conferita a Bridgemaker o GELLIFY.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "missione",
+   "fonte": "factoryplus.eu",
+   "fatturato": "5.607.206 euro di produzione 2024, utile 18.065 (-64,01%) [S]",
+   "prezzo_nota": "Nessun listino [N]. Due contratti pubblici [S]",
+   "contro_noi": "La rete istituzionale che nessun indipendente ha: CDP, Intesa Sanpaolo, Regione Lombardia, ~30 mln di equity su Maritime Ventures.",
+   "contro_loro": "Diciottomila euro di utile su 5,6 milioni di produzione: girano i costi dei programmi senza catturare valore. Nessun team di sviluppo interno.",
+   "segnali": [
+    {
+     "data": "24/07/2026",
+     "testo": "Cambia nome in Factory Plus; il dominio storico reindirizza",
+     "mk": "V"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "bridgemaker",
+   "nome": "Bridgemaker",
+   "sito": "bridgemaker.de",
+   "sede": "Berlino",
+   "anno": 2016,
+   "team": 0,
+   "arena": "ai-transformation",
+   "origine": "innovazione",
+   "oi": 1,
+   "vb": 3,
+   "ai": 3,
+   "ma": 1,
+   "target": [
+    "midmarket",
+    "enterprise",
+    "investitori"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "success-fee",
+    "licenza"
+   ],
+   "delivery": 2,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "si",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 2,
+   "payoff": "Ergebnis. KI-nativ. Umgesetzt.",
+   "argomento": "Una parte del compenso e' legata a risultati misurabili definiti in anticipo, e se il risultato non arriva quella parte decade.",
+   "meccanismo": "Triade su filiera: metodo da loro, relazione da un partner locale, capitale da un terzo. Replicato due volte in due anni.",
+   "note": "L'unico su tutto il perimetro con la remunerazione a risultato scritta in chiaro, clausola di decadenza inclusa. In Italia non ha sede, team ne' una pagina in italiano. Maritime Ventures scade a maggio 2027.",
+   "nuovo": false,
+   "territorio": "risultato",
+   "fonte": "bridgemaker.de",
+   "fatturato": "BC Ventures chiude il 2024 con ricavi 0, perdita 13mila, 0 dipendenti [S]",
+   "prezzo_nota": "Nessun listino [N]. Percentuale della componente a risultato non quantificata [N] — e' il numero che ci servirebbe per costruire la nostra clausola",
+   "contro_noi": "Una parte del nostro compenso e' legata a risultati misurabili definiti prima, e se il risultato non arriva quella parte decade. Scritto sul sito.",
+   "contro_loro": "In Italia non hanno nulla di proprio: nessuna sede, nessun team, nessuna pagina in italiano. Il veicolo italiano ha zero ricavi e zero dipendenti.",
+   "segnali": [
+    {
+     "data": "02/2026",
+     "testo": "Co-fonda con PwC Deutschland e Segenia Capital un venture studio con fondo da 30 mln",
+     "mk": "V"
+    },
+    {
+     "data": "05/2027",
+     "testo": "Scade il programma Maritime Ventures: la finestra italiana si apre o si chiude qui",
+     "mk": "V"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "infinite-area",
+   "nome": "Infinite Area",
+   "sito": "infinitearea.com",
+   "sede": "Montebelluna",
+   "anno": 2016,
+   "team": 7,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 2,
+   "vb": 1,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "startup",
+    "investitori"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "licenza"
+   ],
+   "delivery": 1,
+   "ingresso": "evento",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 0,
+   "marcatura": "S",
+   "minaccia": 2,
+   "argomento": "AI-first platform con cinque aree di intervento.",
+   "meccanismo": "Spazi, eventi e programmi territoriali.",
+   "note": "Il profilo strutturalmente piu' simile a Deploiable, e per questo il piu' istruttivo: 7 dipendenti a bilancio, ATECO principale affitto di immobili, ricavi in calo, zero clienti nominati dopo ricerca esaustiva.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "competenza",
+   "fonte": "infinitearea.com",
+   "fatturato": "1.507.963 euro 2024, -3,6%, 7 dipendenti [S]",
+   "prezzo_nota": "Nessun listino [N]. 5 contratti pubblici per 346.174 euro [S]",
+   "contro_noi": "Cinque aree AI con perimetro tecnico definito e posizioni AI aperte.",
+   "contro_loro": "Sette dipendenti a bilancio e ATECO principale 68.20.02, affitto di immobili non residenziali. Zero clienti nominati dopo ricerca esaustiva, /partner/ in 404.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "alan-advantage",
+   "nome": "Alan Advantage",
+   "sito": "alanadvantage.com",
+   "sede": "Roma",
+   "anno": 2016,
+   "team": 0,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 3,
+   "ai": 2,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 1,
+   "ingresso": "bando",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 3,
+   "argomento": "Tre linee su quattro sotto lo stesso tetto, dalla PA alle PMI.",
+   "meccanismo": "Programmi istituzionali, fra cui il Cyber Innovation Network con l'Agenzia per la Cybersicurezza Nazionale.",
+   "note": "Il perimetro dichiarato piu' vicino a quello di Deploiable. Non espone un solo committente pagante.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "costruzione",
+   "fonte": "alanadvantage.com",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Tre linee su quattro sotto lo stesso tetto, dalla PA alle PMI, con programmi istituzionali come il Cyber Innovation Network con ACN.",
+   "contro_loro": "Non espongono un solo committente pagante: 400 startup selezionate non sono 400 clienti.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "tinexta",
+   "nome": "Tinexta Innovation Hub",
+   "sito": "tinexta.com",
+   "sede": "Correggio",
+   "anno": 1996,
+   "team": 952,
+   "arena": "finanza-agevolata",
+   "origine": "consulenza",
+   "oi": 1,
+   "vb": 0,
+   "ai": 1,
+   "ma": 1,
+   "target": [
+    "pmi",
+    "midmarket",
+    "enterprise"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "success-fee"
+   ],
+   "delivery": 0,
+   "ingresso": "canale",
+   "prezzo": "no",
+   "rischio": "si",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 1,
+   "argomento": "Diecimila clienti e la rete piu' capillare d'Italia sulla PMI.",
+   "meccanismo": "La finanza agevolata: il modo in cui la PMI italiana compra innovazione.",
+   "note": "156,2 mln di ricavi di BU 2025. Success fee sull'incentivo ottenuto: unico caso italiano di compenso a risultato provato da una quotata. Ma il margine EBITDA scende dal 29,1% al 24,0% all'8,4% in H1 2026, e Transizione 5.0 e' stata tagliata da 6,3 a 2,75 miliardi. Contende il budget, non il mandato: partner di canale piu' che concorrente.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "scala",
+   "fonte": "tinexta.com",
+   "fatturato": "156,2 mln ricavi di BU 2025, 952 FTE [V]",
+   "prezzo_nota": "Nessun prezzo pubblico [N]. Success fee sull'incentivo ottenuto, aliquota non dichiarata [N] — unico benchmark italiano di pricing a risultato che potremmo avere. 33 contratti pubblici per 958.726 euro [S]",
+   "contro_noi": "Diecimila clienti e la rete piu' capillare d'Italia sulla PMI. Siamo gia' dentro, voi dovete entrare.",
+   "contro_loro": "Il margine EBITDA e' passato dal 29,1% al 24,0% all'8,4% in H1 2026, Transizione 5.0 e' stata tagliata da 6,3 a 2,75 miliardi e il modello dipende dal calendario legislativo. Hanno bisogno di qualcosa da vendere che non sia un incentivo.",
+   "segnali": [
+    {
+     "data": "H1 2026",
+     "testo": "EBITDA di BU crolla dal 24,0% all'8,4%; delisting in corso",
+     "mk": "V"
+    },
+    {
+     "data": "2026",
+     "testo": "Transizione 5.0 chiusa in anticipo, fondi tagliati da 6,3 a 2,75 mld",
+     "mk": "V"
+    }
+   ],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "growth-capital",
+   "nome": "Growth Capital",
+   "sito": "growthcapital.vc",
+   "sede": "Milano",
+   "anno": 2016,
+   "team": 12,
+   "arena": "ma-advisory",
+   "origine": "finanza",
+   "oi": 2,
+   "vb": 1,
+   "ai": 0,
+   "ma": 3,
+   "target": [
+    "startup",
+    "investitori",
+    "enterprise"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "success-fee"
+   ],
+   "delivery": 0,
+   "ingresso": "community",
+   "prezzo": "no",
+   "rischio": "parziale",
+   "prove": 2,
+   "marcatura": "V",
+   "minaccia": 2,
+   "argomento": "Siamo la fonte statistica del mercato: l'osservatorio trimestrale viene ripreso lo stesso giorno da otto testate.",
+   "meccanismo": "Agenda informativa: il report costruisce l'autorevolezza che porta il mandato.",
+   "note": "Unico su 93 a presidiare l'M&A buy-side, ma le tre operazioni riguardano tutte lo stesso acquirente e PitchBook conta 5 buy-side su 69 servizi. Circa 2 mln di ricavi con 17.245 euro di utile.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "scala",
+   "fonte": "growthcapital.vc",
+   "fatturato": "~2 mln ricavi, utile 17.245 euro, 12 dipendenti camerali [S]",
+   "prezzo_nota": "Nessuna tariffa reperita [N]. Un solo contratto pubblico da 5.280 euro [S]",
+   "contro_noi": "Siamo la fonte statistica del mercato: l'osservatorio trimestrale viene ripreso lo stesso giorno da otto testate.",
+   "contro_loro": "Il buy-side poggia su un solo acquirente-cliente e PitchBook conta 5 servizi buy-side su 69. Due milioni di ricavi con diciassettemila euro di utile.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "startup-geeks",
+   "nome": "Startup Geeks",
+   "sito": "startupgeeks.it",
+   "sede": "Mantova",
+   "anno": 2019,
+   "team": 0,
+   "arena": "venture-builder",
+   "origine": "community",
+   "oi": 2,
+   "vb": 1,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "startup",
+    "enterprise"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "licenza"
+   ],
+   "delivery": 0,
+   "ingresso": "community",
+   "prezzo": "si",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 1,
+   "payoff": "L'incubatore online piu' grande d'Italia",
+   "argomento": "Il volume: circa 400 progetti incubati in un anno.",
+   "meccanismo": "Community e abbonamento a 24,90 euro al mese. Il cliente pagante e' il founder, non la corporate.",
+   "note": "La linea corporate — l'unica che riguardi Deploiable — ha 12 loghi e nessun caso, nessuna conferma, nessun annuncio datato negli ultimi 18 mesi.",
+   "nuovo": false,
+   "territorio": "missione",
+   "fonte": "startupgeeks.it",
+   "fatturato": "2.900.349 euro ricavi 2025, utile 292.771 [S]",
+   "prezzo_nota": "Club 24,90 euro/mese o 249/anno; corso 44,95 euro + IVA [D/V]. Programmi corporate dietro form [N]",
+   "contro_noi": "L'incubatore online piu' grande d'Italia, circa 400 progetti in un anno.",
+   "contro_loro": "Il cliente pagante e' il founder persona fisica. La linea corporate ha 12 loghi, nessun caso e nessun annuncio datato da 18 mesi.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "ventive",
+   "nome": "Ventive",
+   "sito": "ventive.it",
+   "sede": "Italia",
+   "anno": 2019,
+   "team": 0,
+   "arena": "ma-advisory",
+   "origine": "finanza",
+   "oi": 1,
+   "vb": 0,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "startup"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity",
+    "capital-gain"
+   ],
+   "delivery": 0,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "si",
+   "prove": 1,
+   "marcatura": "D",
+   "minaccia": 0,
+   "payoff": "Think Big. Deal Right. Raise Money.",
+   "argomento": "Raccogliere capitale, non costruire imprese.",
+   "meccanismo": "InVentive: incubazione senza costo, remunerata in equity.",
+   "note": "Riclassificata correttamente nella V2. Ricavi 2024 di 610.679 euro con perdita di 436.499. Possibile intermediario, non concorrente.",
+   "nuovo": false,
+   "territorio": "nessuno",
+   "fonte": "ventive.it",
+   "fatturato": "610.679 euro ricavi 2024, perdita 436.499 [S]",
+   "prezzo_nota": "InVentive a costo zero contro equity, quota non dichiarata [D]",
+   "contro_noi": "",
+   "contro_loro": "",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "vento",
+   "nome": "Vento (Exor)",
+   "sito": "vento.vc",
+   "sede": "Torino",
+   "anno": 2021,
+   "team": 0,
+   "arena": "investitore",
+   "origine": "finanza",
+   "oi": 0,
+   "vb": 0,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "startup"
+   ],
+   "ricavo": [
+    "capital-gain"
+   ],
+   "delivery": 1,
+   "ingresso": "evento",
+   "prezzo": "si",
+   "rischio": "si",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 0,
+   "argomento": "Capitale industriale Exor senza equity sulle startup create.",
+   "meccanismo": "Programma Reef e evento Wave.",
+   "note": "Fondo, non fornitore. Nessuna fee, nessun retainer, nessuna success fee: non ha committenti. L'unico effetto sul mercato e' di agenda.",
+   "payoff": "",
+   "nuovo": false,
+   "territorio": "scala",
+   "fonte": "vento.vc",
+   "fatturato": "fondo 75 mln, capitale interamente Exor [V]",
+   "prezzo_nota": "80.000 euro pre-seed nel programma [V]; biglietti Wave 2026 da 230 a 900 euro [V]",
+   "contro_noi": "",
+   "contro_loro": "",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "crit",
+   "nome": "CRIT",
+   "sito": "crit-research.it",
+   "sede": "Vignola",
+   "anno": 2000,
+   "team": 0,
+   "arena": "open-innovation",
+   "origine": "tecnologia",
+   "oi": 3,
+   "vb": 0,
+   "ai": 1,
+   "ma": 0,
+   "target": [
+    "pmi",
+    "midmarket",
+    "enterprise"
+   ],
+   "ricavo": [
+    "quota-consortile",
+    "fee-progetto"
+   ],
+   "delivery": 0,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "V",
+   "minaccia": 2,
+   "argomento": "Technology broker per la manifattura, con 25+ soci industriali.",
+   "meccanismo": "Quota consortile ricorrente: modello raro nel panel e difficile da spiazzare.",
+   "note": "Soci fra cui Ferrari, CNH Industrial, Technogym, Tetra Pak, IMA, Sacmi. Presidia esattamente PMI e medio-grandi industriali, con ricavo ricorrente.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "competenza",
+   "fonte": "crit-research.it",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "Quota consortile ricorrente, importo non pubblico [N]. 14 contratti pubblici per 826.697 euro [S]",
+   "contro_noi": "Venticinque soci industriali fra cui Ferrari, CNH, Technogym, IMA, Sacmi. La manifattura ci paga una quota tutti gli anni.",
+   "contro_loro": "Modello consortile: serve i soci, non il mercato aperto. Fuori dal consorzio non hanno una proposta commerciale.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "i3p",
+   "nome": "I3P",
+   "sito": "i3p.it",
+   "sede": "Torino",
+   "anno": 1999,
+   "team": 0,
+   "arena": "open-innovation",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 0,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "startup",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "quota-consortile"
+   ],
+   "delivery": 0,
+   "ingresso": "evento",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "D",
+   "minaccia": 2,
+   "argomento": "Le referenze piu' numerose del lotto: Iveco, Italgas, Terna, CA Auto Bank, Stellantis.",
+   "meccanismo": "Incubatore del Politecnico di Torino.",
+   "note": "Vende il ciclo identico a quello di Deploiable: analisi bisogni, progettazione, scouting, PoC, adozione.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "costruzione",
+   "fonte": "i3p.it",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Le referenze piu' numerose del panel: Iveco, Italgas, Terna, CA Auto Bank, Stellantis.",
+   "contro_loro": "Incubatore universitario: struttura di costo e mandato pubblico, non un fornitore che risponde di un risultato commerciale.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "nana-bianca",
+   "nome": "Nana Bianca",
+   "sito": "nanabianca.it",
+   "sede": "Firenze",
+   "anno": 2012,
+   "team": 0,
+   "arena": "venture-builder",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 2,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "startup"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 1,
+   "ingresso": "evento",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 3,
+   "marcatura": "D",
+   "minaccia": 2,
+   "argomento": "Sette programmi di accelerazione su commessa in parallelo.",
+   "meccanismo": "Committenza corporate ripetuta: Intesa Sanpaolo, Baker Hughes, Estra.",
+   "note": "Il venture building e' startup studio proprio, non su commessa.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "costruzione",
+   "fonte": "nanabianca.it",
+   "fatturato": "non esposto [N]",
+   "prezzo_nota": "Non esposto [N]. 5 contratti pubblici per 262.268 euro [S]",
+   "contro_noi": "Sette programmi di accelerazione su commessa in parallelo, con Intesa Sanpaolo, Baker Hughes, Estra.",
+   "contro_loro": "Il venture building e' startup studio proprio, non su commessa: sul mandato del cliente non hanno precedenti.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "opinno",
+   "nome": "Opinno Italy",
+   "sito": "opinno.com",
+   "sede": "Milano",
+   "anno": 2010,
+   "team": 250,
+   "arena": "consulenza-pivotata",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 3,
+   "ai": 3,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "pa"
+   ],
+   "ricavo": [
+    "fee-progetto"
+   ],
+   "delivery": 1,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 1,
+   "marcatura": "S",
+   "minaccia": 3,
+   "argomento": "Tre linee su quattro, 250+ consulenti, 11 paesi.",
+   "meccanismo": "Rete internazionale.",
+   "note": "Punteggio 5 nello screening. Assetto societario dell'entita' italiana non riconciliato: se l'entita' e' operativa, e' fra i primi concorrenti frontali.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "costruzione",
+   "fonte": "opinno.com",
+   "fatturato": "non riconciliato per l'entita' italiana [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "250 consulenti in 11 paesi e tre linee su quattro.",
+   "contro_loro": "L'assetto societario dell'entita' italiana non e' chiaro: puo' essere una presenza di marchio senza struttura operativa. Da verificare prima di temerli.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  },
+  {
+   "slug": "twenty-ventures",
+   "nome": "Twenty Ventures / 20V",
+   "sito": "20v.it",
+   "sede": "Italia",
+   "anno": 2020,
+   "team": 0,
+   "arena": "venture-builder",
+   "origine": "innovazione",
+   "oi": 3,
+   "vb": 3,
+   "ai": 0,
+   "ma": 0,
+   "target": [
+    "enterprise",
+    "midmarket"
+   ],
+   "ricavo": [
+    "fee-progetto",
+    "equity-portafoglio"
+   ],
+   "delivery": 1,
+   "ingresso": "referral",
+   "prezzo": "no",
+   "rischio": "no",
+   "prove": 0,
+   "marcatura": "D",
+   "minaccia": 2,
+   "argomento": "Venture building su commissione e CVC-as-a-Service.",
+   "meccanismo": "Relazione diretta.",
+   "note": "Unico del lotto a vendere esplicitamente venture building su commissione, e zero clienti nominati. E' la prova migliore che quel mercato o non esiste o non si vede.",
+   "nuovo": true,
+   "payoff": "",
+   "territorio": "costruzione",
+   "fonte": "20v.it",
+   "fatturato": "non trovato [N]",
+   "prezzo_nota": "Non esposto [N]",
+   "contro_noi": "Vendiamo esplicitamente venture building su commissione e CVC-as-a-Service.",
+   "contro_loro": "Zero clienti corporate nominati. Sono la prova migliore che quel mercato o non esiste o non si vede.",
+   "segnali": [],
+   "archiviato": false,
+   "motivo_archivio": "",
+   "competenze": null,
+   "catalogo": [],
+   "mappato": false
+  }
+ ],
+ "contesto": [
+  {
+   "data": "02/02/2025",
+   "testo": "AI Act: divieti sulle pratiche inaccettabili e obbligo di alfabetizzazione del personale in vigore",
+   "mk": "V",
+   "tipo": "norma"
+  },
+  {
+   "data": "10/10/2025",
+   "testo": "Legge 132/2025 in vigore: l'Italia e' il primo Stato membro con una legge organica sull'IA. ACN autorita' di vigilanza, AgID di notifica",
+   "mk": "V",
+   "tipo": "norma"
+  },
+  {
+   "data": "02/2026",
+   "testo": "Osservatorio AI Polimi: mercato italiano a 1,8 mld di euro, +50% sul 2024. Il 71% delle grandi imprese ha almeno un progetto AI, meno del 10% delle PMI",
+   "mk": "V",
+   "tipo": "mercato"
+  },
+  {
+   "data": "05/2026",
+   "testo": "Osservatorio Innovazione Digitale nelle PMI: il 76% delle PMI italiane non ha investito ne' prevede di investire in AI. Solo il 7% ha avviato formazione strutturata",
+   "mk": "V",
+   "tipo": "mercato"
+  },
+  {
+   "data": "2026",
+   "testo": "SDA Bocconi per AssoSoftware: il 28% delle aziende italiane ha gia' integrato AI nei propri gestionali",
+   "mk": "V",
+   "tipo": "mercato"
+  },
+  {
+   "data": "22/07/2026",
+   "testo": "Datapizza chiude una Serie A da 10 mln con Nextalia Ventures, dichiaratamente per estendere l'offerta alle PMI",
+   "mk": "V",
+   "tipo": "concorrenza"
+  },
+  {
+   "data": "24/07/2026",
+   "testo": "Cariplo Factory diventa Factory Plus",
+   "mk": "V",
+   "tipo": "concorrenza"
+  },
+  {
+   "data": "27/07/2026",
+   "testo": "Entra in vigore l'Omnibus digitale sull'IA: alcune scadenze sull'alto rischio slittano a 12/2027 e 08/2028",
+   "mk": "V",
+   "tipo": "norma"
+  },
+  {
+   "data": "02/08/2026",
+   "testo": "AI Act: applicazione generale. Obblighi di trasparenza art. 50, vigilanza di mercato, enforcement nazionale. Sanzioni fino a 35 mln o 7% del fatturato mondiale",
+   "mk": "V",
+   "tipo": "norma"
+  },
+  {
+   "data": "H1 2026",
+   "testo": "Tinexta Innovation Hub: margine EBITDA di BU dal 24,0% all'8,4%. Transizione 5.0 tagliata da 6,3 a 2,75 mld",
+   "mk": "V",
+   "tipo": "concorrenza"
+  },
+  {
+   "data": "05/2027",
+   "testo": "Scade il programma Maritime Ventures (Bridgemaker + Factory Plus + CDP): si libera o si consolida il posto di operatore di metodo",
+   "mk": "V",
+   "tipo": "finestra"
+  }
+ ],
+ "incertezze": [
+  {
+   "cosa": "Su tutti i 77 contratti pubblici mancano stazione appaltante e oggetto",
+   "perche": "Non sappiamo cosa comprendesse un contratto da 425.186 euro. E' il buco piu' serio sui prezzi",
+   "come": "ANAC-BDNCP sui 12 contratti sopra i 100.000 euro"
+  },
+  {
+   "cosa": "Nessuno dei 93 operatori della V2 ha un fatturato verificato",
+   "perche": "Lo screening e' stato fatto col budget di ricerca gia' esaurito, senza incrocio di fonti",
+   "come": "Bilanci depositati sui candidati a scheda"
+  },
+  {
+   "cosa": "L'M&A buy-side non e' mai stato cercato dal lato del mestiere M&A",
+   "perche": "I sette angoli erano costruiti sull'innovazione. Il vuoto puo' essere di misurazione",
+   "come": "Scouting su boutique di corporate finance milanesi e romane"
+  },
+  {
+   "cosa": "Il venture building su commissione potrebbe esistere e non vedersi",
+   "perche": "15 operatori su 18 non nominano un cliente, e un mandato e' per natura riservato",
+   "come": "Due o tre conversazioni con chi ha comprato"
+  },
+  {
+   "cosa": "La percentuale della componente a risultato di Bridgemaker non e' quantificata",
+   "perche": "E' il numero che ci servirebbe per costruire la nostra clausola di decadenza",
+   "come": "Lettera d'incarico o term sheet di un progetto"
+  },
+  {
+   "cosa": "L'aliquota della success fee di Tinexta non e' pubblica",
+   "perche": "E' l'unico benchmark italiano di pricing a risultato che potremmo avere",
+   "come": "Convenzione associativa con condizioni economiche"
+  },
+  {
+   "cosa": "L'assetto societario di Opinno Italy non e' riconciliato",
+   "perche": "Se l'entita' italiana e' operativa, sale fra i concorrenti frontali",
+   "come": "Visura camerale"
+  },
+  {
+   "cosa": "I 23 operatori nuovi hanno scheda a campi normalizzati ma non a 14 campi",
+   "perche": "Argomenti e meccanismi sono ricostruiti da fonti aperte, non da schede complete",
+   "come": "Prompt 2 su Datapizza, Yellow Tech, m-ai, Rootbox, TeamSystem"
+  }
+ ]
+}</script>
+<script>
+const D=JSON.parse(document.getElementById("DATI").textContent);
+const OP=D.operatori, V=D.vocabolari, NOI=OP.find(o=>o.noi);
+/* ATTIVI: tutto cio' che entra nei calcoli. Gli archiviati restano solo a registro. */
+const ATT=OP.filter(o=>!o.archiviato);
+const ARC=OP.filter(o=>o.archiviato);
+const SCALA=V.scala, DELIV=V.delivery, PROVE=["Nessuna","Deboli","Discrete","Solide"];
+const LINEE={oi:"Open Innovation",vb:"Venture Building",ai:"AI Adoption",ma:"M&A buy-side"};
+const ASSI={
+  delivery:{eti:"Fin dove arriva il fornitore",lab:DELIV},
+  ai:{eti:"Sovrapposizione · AI Adoption",lab:SCALA},
+  oi:{eti:"Sovrapposizione · Open Innovation",lab:SCALA},
+  vb:{eti:"Sovrapposizione · Venture Building",lab:SCALA},
+  ma:{eti:"Sovrapposizione · M&A buy-side",lab:SCALA},
+  prove:{eti:"Prove di esecuzione",lab:PROVE},
+  minaccia:{eti:"Minaccia per noi",lab:["Nulla","Bassa","Media","Alta"]},
+};
+const COLM=["var(--m0)","var(--m1)","var(--m2)","var(--m3)"];
+const el=(t,c,h)=>{const n=document.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n};
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const senza=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const barre=n=>`<span class="barre" role="img" aria-label="${n} su 3">${
+  [0,1,2,3].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
+const jac=(a,b)=>{const A=new Set(a),B=new Set(b);
+  const int=[...A].filter(x=>B.has(x)).length; const uni=new Set([...a,...b]).size;
+  return uni?int/uni:1};
+
+/* somiglianza con noi: 0-100 */
+function somiglianza(o){
+  const num=["oi","vb","ai","ma","delivery"].map(k=>1-Math.abs(o[k]-NOI[k])/3);
+  const s=[jac(o.target,NOI.target),jac(o.ricavo,NOI.ricavo),
+           o.arena===NOI.arena?1:0,o.ingresso===NOI.ingresso?1:0];
+  const t=[...num,...s];
+  return Math.round(100*t.reduce((a,b)=>a+b,0)/t.length);
+}
+
+/* cifre */
+(function(){
+  const n=ATT.length-1, fr=ATT.filter(o=>!o.noi&&o.minaccia===3).length;
+  const nuovi=ATT.filter(o=>o.nuovo&&!o.noi).length, ver=ATT.filter(o=>!o.noi&&o.marcatura==="V").length;
+  const c=document.getElementById("cifre");
+  [["acc",n,"operatori normalizzati"],["hot",fr,"minacce frontali"],
+   ["",nuovi,"nuovi rispetto alla V2"],["",ver,"con dato verificato"]]
+   .forEach(([k,v,e])=>c.appendChild(el("div","cifra "+k,`<b>${v}</b><span>${e}</span>`)));
+})();
+
+/* nav */
+const VISTE=[["offerta","Offerta"],["competenze","Competenze"],["registro","Registro"],
+  ["confronto","Confronto"],["mappa","Posizionamento"],["gara","In gara"],
+  ["segnali","Segnali"],["sintesi","Letture"],["arene","Arene"]];
+(function(){
+  const n=document.getElementById("nav");
+  VISTE.forEach(([id,eti],i)=>{
+    const b=el("button",null,eti); b.setAttribute("aria-selected",i===0);
+    b.onclick=()=>{VISTE.forEach(([j])=>document.getElementById("v-"+j).hidden=(j!==id));
+      [...n.children].forEach(x=>x.setAttribute("aria-selected",x===b));
+      window.scrollTo({top:0,behavior:"smooth"})};
+    n.appendChild(b);
+  });
+})();
+
+/* ---------- sintesi calcolata ---------- */
+(function(){
+  const c=document.getElementById("letture");
+  const gemelli=ATT.filter(o=>!o.noi).map(o=>({o,s:somiglianza(o)}))
+    .sort((a,b)=>b.s-a.s).slice(0,4);
+  const avanti=ATT.filter(o=>!o.noi&&o.delivery>NOI.delivery&&o.ai===3);
+  const ing={}; ATT.forEach(o=>ing[o.ingresso]=(ing[o.ingresso]||0)+1);
+  const ingTop=Object.entries(ing).sort((a,b)=>b[1]-a[1])[0];
+  const liberi=Object.entries(V.territori).filter(([,t])=>t.presidi===0);
+  const aiAlta=ATT.filter(o=>!o.noi&&o.ai===3).length;
+  const maAlta=ATT.filter(o=>!o.noi&&o.ma===3).length;
+  const prezzo=ATT.filter(o=>!o.noi&&o.prezzo==="si").length;
+  const rischio=ATT.filter(o=>!o.noi&&o.rischio==="si").length;
+  const L=[
+   ["La linea su cui puntiamo è la più affollata della mappa",
+    `<b>${aiAlta}</b> operatori su ${ATT.length-1} hanno AI Adoption alta, contro
+     <b>${maAlta}</b> su M&A. L'AI non è uno spazio da occupare: è il posto dove sono
+     già tutti. La scarsità sta altrove, ed è misurata: sull'M&A c'è un solo presidio,
+     ma il nostro stesso metodo dice che quel vuoto potrebbe essere di misurazione.`],
+   ["Ci sono quattro operatori nella nostra identica casella",
+    `${gemelli.map(g=>`<b>${esc(g.o.nome)}</b> (${g.s}%)`).join(", ")} sono i più vicini a
+     noi sui nove campi normalizzati. Tutti dichiarano AI alta e si fermano all'MVP.
+     Il compratore non ha uno strumento per distinguerci: è questo il problema di
+     posizionamento, non la mancanza di competenze.`],
+   ["Il divario competitivo è un passo di delivery, non un racconto",
+    `<b>${avanti.length}</b> operatori hanno AI alta <em>e</em> arrivano oltre l'MVP:
+     ${avanti.slice(0,6).map(o=>esc(o.nome)).join(", ")} e altri.
+     Noi ci fermiamo all'MVP e passiamo a un tech partner. Su questo asse quel passaggio
+     di consegne è tutta la distanza che ci separa da chi il cliente ricorda.`],
+   ["Il nostro meccanismo di acquisizione è quello di tutti",
+    `<b>${ingTop[1]}</b> operatori su ${ATT.length} entrano dal cliente via
+     ${esc(V.ingressi[ingTop[0]]).toLowerCase()}, e noi siamo fra quelli. Uno solo entra
+     dalla formazione, tre dalla community, quattro dal canale terzo. Il referral non è un
+     meccanismo: è l'assenza di un meccanismo, e non scala.`],
+   ["I due territori vuoti reggono, e sono compatibili fra loro",
+    `Solo <b>${prezzo}</b> operatori espongono un prezzo pubblico e <b>${rischio}</b>
+     condividono davvero il rischio. I territori verbali liberi restano
+     ${liberi.map(([,t])=>`<b>${esc(t.eti.toLowerCase())}</b>`).join(" e ")}.
+     È l'unica promessa che nessuno degli altri può copiare senza cambiare modello.`],
+  ];
+  L.forEach(([t,p],i)=>{
+    c.appendChild(el("div","scheda",
+      `<p class="n">Lettura ${i+1}</p><h3>${t}</h3><p style="margin:8px 0 0">${p}</p>`));
+    c.lastChild.style.marginBottom="14px";
+  });
+})();
+
+/* ---------- offerta ---------- */
+const SRV=[];
+ATT.forEach(o=>(o.catalogo||[]).forEach(x=>SRV.push({...x,nome_op:o.nome,noi:!!o.noi})));
+const MAPPATI=ATT.filter(o=>o.mappato);
+(function(){
+  const T=Object.keys(V.tipi);
+  const ops=[...MAPPATI].sort((a,b)=>(b.noi?1:0)-(a.noi?1:0)||b.catalogo.length-a.catalogo.length);
+  let h='<table class="mxo"><thead><tr><th class="rig">Tipo di servizio</th>';
+  ops.forEach(o=>h+=`<th class="${o.noi?"noi":""}" title="${esc(o.nome)}">${
+    esc(o.nome.split(" ")[0].replace(/[.,]/g,"").slice(0,11))}</th>`);
+  h+='</tr></thead><tbody>';
+  let vuote=0;
+  T.forEach(t=>{
+    const tot=ops.reduce((a,o)=>a+o.catalogo.filter(x=>x.tipo===t).length,0);
+    const noiHa=ops.some(o=>o.noi&&o.catalogo.some(x=>x.tipo===t));
+    if(!noiHa) vuote++;
+    h+=`<tr class="${noiHa?"":"riga-vuota"}"><td class="rig">${esc(V.tipi[t])}${
+      noiHa?"":' <span class="tag acc">non copriamo</span>'}</td>`;
+    ops.forEach(o=>{
+      const n=o.catalogo.filter(x=>x.tipo===t).length;
+      h+=`<td class="${o.noi?"noi":""}"><button class="cel v${Math.min(n,3)}"
+        onclick="filtraCat('${o.slug}','${t}')"
+        title="${esc(o.nome)} · ${esc(V.tipi[t])}: ${n}">${n||"·"}</button></td>`;
+    });
+    h+="</tr>";
+  });
+  h+="</tbody></table>";
+  document.getElementById("mx-off").innerHTML=h;
+  const noi=ATT.find(o=>o.noi);
+  const scoperti=Object.keys(V.tipi).filter(t=>!noi.catalogo.some(x=>x.tipo===t));
+  document.getElementById("nota-off").innerHTML=
+   `<b>Cosa dice la matrice.</b> Sono mappati <b>${SRV.length}</b> servizi su
+    <b>${MAPPATI.length}</b> operatori. Su ${Object.keys(V.tipi).length} tipi di servizio
+    noi ne copriamo <b>${Object.keys(V.tipi).length-vuote}</b>. I ${vuote} scoperti sono:
+    ${scoperti.map(t=>esc(V.tipi[t].toLowerCase())).join(" · ")}.
+    <br><br>Non sono tutti buchi da colmare — alcuni sono mestieri diversi dal nostro.
+    Ma <b>formazione</b>, <b>sviluppo di agenti</b> e <b>policy e compliance</b> sono i tre da
+    guardare: sono quelli con cui gli altri entrano dal cliente prima di noi.`;
+})();
+(function(){
+  const so=document.getElementById("s-op"), st=document.getElementById("s-tipo");
+  so.appendChild(new Option("tutti","")); st.appendChild(new Option("tutti",""));
+  MAPPATI.forEach(o=>so.appendChild(new Option(o.nome,o.slug)));
+  Object.entries(V.tipi).forEach(([k,e])=>st.appendChild(new Option(e,k)));
+  so.onchange=st.onchange=catalogo;
+  document.getElementById("s-q").oninput=catalogo;
+  const bp=document.getElementById("s-prezzo");
+  bp.onclick=()=>{bp.setAttribute("aria-pressed",bp.getAttribute("aria-pressed")!=="true"); catalogo()};
+})();
+function filtraCat(op,tipo){
+  document.getElementById("s-op").value=op; document.getElementById("s-tipo").value=tipo;
+  catalogo(); document.getElementById("catalogo").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function catalogo(){
+  const op=document.getElementById("s-op").value, tp=document.getElementById("s-tipo").value;
+  const q=senza(document.getElementById("s-q").value);
+  const solo=document.getElementById("s-prezzo").getAttribute("aria-pressed")==="true";
+  const set=SRV.filter(x=>{
+    if(op&&x.op!==op) return false;
+    if(tp&&x.tipo!==tp) return false;
+    if(solo&&!/euro|\$|gratuito/i.test(x.prezzo)) return false;
+    if(q&&!senza(x.nome+" "+x.consegna+" "+x.nome_op+" "+x.prova).includes(q)) return false;
+    return true});
+  document.getElementById("s-conta").innerHTML=
+    `<b>${set.length}</b> servizi su ${SRV.length} · <b>${
+     set.filter(x=>/euro|\$|gratuito/i.test(x.prezzo)).length}</b> con un prezzo reale`;
+  document.getElementById("catalogo").innerHTML=set.map(x=>`
+    <div class="srv ${x.noi?"noi":""}">
+      <div class="srv-top"><b>${esc(x.nome)}</b>
+        <span class="op">${esc(x.nome_op)}</span>
+        <span class="tag">${esc(V.tipi[x.tipo])}</span>
+        <span class="mk mk-${x.mk}">${x.mk}</span></div>
+      <p style="margin:0">${esc(x.consegna)}</p>
+      <div class="meta">
+        <span>Durata <b>${esc(x.durata)}</b></span>
+        <span>Prezzo <b>${esc(x.prezzo)}</b></span>
+        <span>Prova <b>${esc(x.prova)}</b></span>
+        <span>Fonte <b>${esc(x.fonte)}</b> · ${esc(x.data)}</span></div>
+    </div>`).join("")||`<div class="vuoto">Nessun servizio con questi filtri.</div>`;
+}
+catalogo();
+
+/* ---------- competenze ---------- */
+(function(){
+  const c=document.getElementById("competenze");
+  [...MAPPATI].sort((a,b)=>(b.noi?1:0)-(a.noi?1:0)||b.competenze.capacita-a.competenze.capacita)
+   .forEach(o=>{
+    const k=o.competenze;
+    c.appendChild(el("div","cmp"+(o.noi?" noi":""),`
+      <div class="cmp-top"><h3 style="margin:0">${esc(o.nome)}</h3>
+        <span class="tag">${esc(V.arene[o.arena])}</span>
+        ${k.headcount?`<span class="op" style="font-family:var(--mono);font-size:11px;color:var(--ink3)">${
+          k.headcount} persone <span class="mk mk-${k.headcount_mk}">${k.headcount_mk}</span></span>`:
+          '<span class="op" style="font-family:var(--mono);font-size:11px;color:var(--ink3)">organico non esposto <span class="mk mk-N">N</span></span>'}</div>
+      <div class="scala"><span class="lab">Capacità tecnica</span>
+        ${barre(k.capacita+1)} <span class="val">${esc(V.capacita[k.capacita])}</span></div>
+      <div class="scala"><span class="lab">Esecuzione</span>
+        ${barre(k.in_casa+1)} <span class="val">${esc(V.incasa[k.in_casa])}</span></div>
+      <div class="scala"><span class="lab">Composizione</span>
+        <span class="val" style="font-weight:400">${k.composizione.map(x=>
+          `<span class="tag">${esc(V.profili[x])}</span>`).join("")}</span></div>
+      ${k.stack.length?`<div class="scala"><span class="lab">Stack dichiarato</span>
+        <span class="val" style="font-weight:400">${k.stack.map(x=>
+          `<span class="tag">${esc(x)}</span>`).join("")}</span></div>`:""}
+      ${k.proprietario.length?`<div class="scala"><span class="lab">Asset proprietari</span>
+        <span class="val" style="font-weight:400">${k.proprietario.map(x=>
+          `<span class="tag acc">${esc(x)}</span>`).join("")}</span></div>`:""}
+      <div class="scala"><span class="lab">Dove installa</span>
+        <span class="val" style="font-weight:400">${k.deploy.map(x=>
+          `<span class="tag">${esc(x)}</span>`).join("")}</span></div>
+      <p style="margin:12px 0 0;color:var(--ink2);font-size:14px">${esc(k.nota)}</p>`));
+   });
+})();
+
+/* ---------- mappa ---------- */
+let arenaSel=new Set();
+(function(){
+  const ax=document.getElementById("ax"),ay=document.getElementById("ay");
+  Object.entries(ASSI).forEach(([k,a])=>{ax.appendChild(new Option(a.eti,k));
+    ay.appendChild(new Option(a.eti,k))});
+  ax.value="delivery"; ay.value="ai"; ax.onchange=ay.onchange=mappa;
+  const fa=document.getElementById("f-arena");
+  Object.entries(V.arene).forEach(([k,eti])=>{
+    const n=ATT.filter(o=>o.arena===k).length;
+    const b=el("button","chip",eti.split(" ")[0].replace(/[()/]/g,"")+" "+n);
+    b.title=eti; b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{arenaSel.has(k)?arenaSel.delete(k):arenaSel.add(k);
+      b.setAttribute("aria-pressed",arenaSel.has(k)); mappa()};
+    fa.appendChild(b);
+  });
+})();
+function mappa(){
+  const kx=document.getElementById("ax").value,ky=document.getElementById("ay").value;
+  const AX=ASSI[kx],AY=ASSI[ky];
+  const set=ATT.filter(o=>!arenaSel.size||arenaSel.has(o.arena)||o.noi);
+  const m=document.getElementById("matrice"); m.innerHTML="";
+  m.appendChild(el("div","mh ang",AY.eti.replace(/^.*· /,"")+" ↑"));
+  for(let x=0;x<4;x++){
+    const h=el("div","mh",AX.lab[x]);
+    if(kx==="delivery") h.title=V.delivery_def[x].reg+" — "+V.delivery_def[x].dopo;
+    m.appendChild(h);
+  }
+  let vuote=0;
+  for(let y=3;y>=0;y--){
+    const hy=el("div","my",AY.lab[y]);
+    if(ky==="delivery") hy.title=V.delivery_def[y].reg+" — "+V.delivery_def[y].dopo;
+    m.appendChild(hy);
+    for(let x=0;x<4;x++){
+      const qui=set.filter(o=>o[kx]===x&&o[ky]===y);
+      const c=el("div","cella"+(qui.length?"":" vuota"));
+      if(!qui.length) vuote++;
+      qui.sort((a,b)=>b.minaccia-a.minaccia).forEach(o=>{
+        const p=el("button","pin"+(o.noi?" noi":""),
+          `<i class="pt" style="background:${o.noi?"var(--carta)":COLM[o.minaccia]}"></i><span>${esc(o.nome)}</span>`);
+        p.onclick=()=>apri(o.slug); c.appendChild(p);
+      });
+      m.appendChild(c);
+    }
+  }
+  const vic=set.filter(o=>!o.noi&&o[kx]===NOI[kx]&&o[ky]===NOI[ky]);
+  /* classifica degli assi per spazio libero */
+  const ks=Object.keys(ASSI),cls=[];
+  for(const a of ks) for(const b of ks){ if(a>=b) continue;
+    let v=0; for(let x=0;x<4;x++) for(let y=0;y<4;y++)
+      if(!ATT.some(o=>o[a]===x&&o[b]===y)) v++;
+    cls.push([a,b,v]);
+  }
+  cls.sort((p,q)=>q[2]-p[2]);
+  document.getElementById("nota-mappa").innerHTML=
+    `<b>Dove siamo su questi assi.</b> Nella nostra casella — ${AX.lab[NOI[kx]].toLowerCase()},
+     ${AY.lab[NOI[ky]].toLowerCase()} — ci sono <b>${vic.length}</b> altri operatori`+
+    (vic.length?`: ${vic.map(o=>esc(o.nome)).join(", ")}.`:".")+
+    ` Restano <b>${vuote}</b> caselle libere su 16.<br><br>
+     <b>Le coppie di assi con più spazio vuoto</b>, calcolate su tutte le combinazioni:
+     ${cls.slice(0,3).map(([a,b,v])=>
+       `${ASSI[a].eti.replace(/^.*· /,"")} × ${ASSI[b].eti.replace(/^.*· /,"")} (<b>${v}</b>)`)
+       .join(" · ")}.`;
+}
+mappa();
+(function(){
+  const c=document.getElementById("simili");
+  ATT.filter(o=>!o.noi).map(o=>({o,s:somiglianza(o)})).sort((a,b)=>b.s-a.s).slice(0,6)
+    .forEach(({o,s})=>{
+      const d=el("div","terr"+(s>=70?" libero":""));
+      d.innerHTML=`<div class="bar"><i style="width:${s}%;background:${
+        s>=70?"var(--acc)":"var(--ink2)"}"></i></div>
+        <span class="n">${s}%</span>
+        <div class="txt"><b>${esc(o.nome)}</b>
+        <span>${esc(V.arene[o.arena])} · si differenzia da noi per: ${
+          esc(delta(o))}</span></div>`;
+      d.style.cursor="pointer"; d.onclick=()=>apri(o.slug); c.appendChild(d);
+    });
+})();
+function delta(o){
+  const d=[];
+  if(o.delivery!==NOI.delivery) d.push(o.delivery>NOI.delivery?"arriva più in profondità nella delivery":"si ferma prima");
+  if(o.prove>NOI.prove) d.push("ha prove di esecuzione più solide");
+  if(o.ingresso!==NOI.ingresso) d.push("entra dal cliente via "+V.ingressi[o.ingresso].toLowerCase());
+  if(o.prezzo==="si") d.push("espone il prezzo");
+  return d.length?d.join(", "):"nulla di sostanziale";
+}
+
+/* ---------- definizioni dell'asse delivery ---------- */
+(function(){
+  const c=document.getElementById("deliv-def");
+  V.delivery_def.forEach((x,i)=>{
+    const noi=i===NOI.delivery;
+    const b=el("div","scheda");
+    if(noi){b.style.borderColor="var(--acc)";b.style.borderWidth="2px";
+      b.style.background="var(--acc-b)"}
+    b.innerHTML=`<p class="n">Gradino ${i+1} di 4${noi?" · siamo qui":""}</p>
+      <h3>${esc(x.eti)}</h3>
+      <p style="margin:8px 0 0"><b>Cosa consegna.</b> ${esc(x.reg)}</p>
+      <p style="margin:8px 0 0;color:var(--ink2)"><b>In pratica:</b> ${esc(x.esce)}</p>
+      <p style="margin:8px 0 0;color:var(--ink2)"><b>Poi cosa succede:</b> ${esc(x.dopo)}</p>
+      <p style="margin:10px 0 0;font-family:var(--mono);font-size:11.5px;color:var(--ink3)">
+        ${esc(x.chi)}</p>`;
+    c.appendChild(b);
+  });
+})();
+
+/* ---------- arene + territori ---------- */
+(function(){
+  const c=document.getElementById("arene");
+  Object.entries(V.arene).forEach(([k,eti])=>{
+    const qui=ATT.filter(o=>o.arena===k); if(!qui.length) return;
+    const box=el("div","scheda");
+    box.appendChild(el("h3",null,esc(eti)));
+    box.appendChild(el("p","n",`${qui.length} operator${qui.length===1?"e":"i"} · origine ${
+      [...new Set(qui.map(o=>V.origini[o.origine]))].join(", ").toLowerCase()}`));
+    const ul=el("ul");
+    qui.sort((a,b)=>b.minaccia-a.minaccia).forEach(o=>{
+      const li=el("li",null,`<i class="pt" style="background:${
+        o.noi?"var(--ink)":COLM[o.minaccia]}"></i>
+        <b style="font-weight:${o.noi?600:500}">${esc(o.nome)}</b>
+        <span class="via">${esc(V.ingressi[o.ingresso])}</span>`);
+      li.onclick=()=>apri(o.slug); ul.appendChild(li);
+    });
+    box.appendChild(ul); c.appendChild(box);
+  });
+  const t=document.getElementById("territori");
+  Object.entries(V.territori).sort((a,b)=>b[1].presidi-a[1].presidi).forEach(([k,x])=>{
+    const w=Math.max(x.presidi/9*100,x.presidi?6:100);
+    const d=el("div","terr"+(x.presidi===0?" libero":""));
+    d.innerHTML=`<div class="bar ${x.presidi?"":"zero"}"><i style="width:${w}%"></i></div>
+      <span class="n">${x.presidi}</span>
+      <div class="txt"><b>${esc(x.eti)}</b><span>${esc(x.nota)}</span></div>`;
+    t.appendChild(d);
+  });
+})();
+
+/* ---------- in gara ---------- */
+(function(){
+  const t=document.getElementById("g-tgt"),l=document.getElementById("g-lin");
+  Object.entries(V.target).forEach(([k,e])=>t.appendChild(new Option(e,k)));
+  Object.entries(LINEE).forEach(([k,e])=>l.appendChild(new Option(e,k)));
+  t.value="pmi"; l.value="ai"; t.onchange=l.onchange=gara;
+})();
+function inGara(){
+  const tg=document.getElementById("g-tgt").value,ln=document.getElementById("g-lin").value;
+  return ATT.filter(o=>!o.noi&&o.target.includes(tg)&&o[ln]>=2)
+    .sort((a,b)=>b.minaccia-a.minaccia||b[ln]-a[ln]);
+}
+function gara(){
+  const set=inGara(),c=document.getElementById("gara");
+  const tg=V.target[document.getElementById("g-tgt").value];
+  const ln=LINEE[document.getElementById("g-lin").value];
+  document.getElementById("g-conta").innerHTML=
+    `<b>${set.length}</b> operatori competono su <b>${esc(ln)}</b> verso <b>${esc(tg.toLowerCase())}</b>`+
+    ` · <b>${set.filter(o=>o.minaccia===3).length}</b> a minaccia frontale`;
+  c.innerHTML="";
+  if(!set.length){c.innerHTML=`<div class="vuoto">Nessun operatore mappato su questa
+    combinazione. Può essere spazio libero — o un buco di misurazione.</div>`; return}
+  set.forEach(o=>{
+    const b=el("div","bc t"+o.minaccia);
+    b.innerHTML=`<div class="bc-top"><h3>${esc(o.nome)}</h3>
+      <span class="liv liv${o.minaccia}">${["non concorrente","contende il budget",
+        "minaccia laterale","minaccia frontale"][o.minaccia]}</span>
+      <span class="mk mk-${o.marcatura}">${o.marcatura}</span></div>
+      <p class="via">${esc(V.arene[o.arena])} · entra via ${esc(V.ingressi[o.ingresso].toLowerCase())}
+       · ${esc(o.fatturato)}</p>
+      <p style="margin:0"><b>Argomento:</b> ${esc(o.argomento)}</p>
+      ${(o.contro_noi||o.contro_loro)?`<div class="duo">
+        <div class="contro"><p class="k">Cosa dirà contro di noi</p><p>${esc(o.contro_noi)||"—"}</p></div>
+        <div class="nostro"><p class="k">Cosa rispondiamo</p><p>${esc(o.contro_loro)||"—"}</p></div>
+      </div>`:""}
+      <p style="margin:14px 0 0;font-size:13.5px;color:var(--ink2)">
+        <b>Prezzi:</b> ${esc(o.prezzo_nota)}</p>`;
+    b.style.cursor="pointer"; b.onclick=()=>apri(o.slug); c.appendChild(b);
+  });
+}
+gara();
+function copiaGara(){
+  const tg=V.target[document.getElementById("g-tgt").value];
+  const ln=LINEE[document.getElementById("g-lin").value];
+  const t=`IN GARA — ${ln} verso ${tg}\n\n`+inGara().map(o=>
+    `${o.nome} (${["non concorrente","contende il budget","minaccia laterale","minaccia frontale"][o.minaccia]})\n`+
+    `Argomento: ${o.argomento}\n`+(o.contro_noi?`Contro di noi: ${o.contro_noi}\n`:"")+
+    (o.contro_loro?`Rispondiamo: ${o.contro_loro}\n`:"")+`Prezzi: ${o.prezzo_nota}\n`).join("\n");
+  navigator.clipboard?.writeText(t).then(
+    ()=>alert("Battlecard copiata negli appunti."),
+    ()=>alert("Copia non riuscita: seleziona il testo a mano."));
+}
+
+/* ---------- registro ---------- */
+const COL=[["nome","Operatore"],["arena","Arena"],["oi","OI"],["vb","VB"],["ai","AI"],
+  ["ma","M&A"],["delivery","Delivery"],["ingresso","Ingresso"],["prezzo","Prezzo"],
+  ["minaccia","Minaccia"],["marcatura","Dato"]];
+let ord="minaccia",asc=false,q="",fMk=new Set(),fRic=new Set(),fTgt=new Set();
+(function(){
+  const t=document.getElementById("thead");
+  COL.forEach(([k,eti])=>{const th=el("th",null,eti);
+    th.onclick=()=>{asc=(ord===k)?!asc:false; ord=k; registro()}; t.appendChild(th)});
+  document.getElementById("q").oninput=e=>{q=senza(e.target.value); registro()};
+  const mk=document.getElementById("f-mk");
+  [["V","verificato"],["D","dichiarato"],["S","stimato"],["N","non trovato"]].forEach(([k,e])=>{
+    const b=el("button","chip",k+" "+e); b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{fMk.has(k)?fMk.delete(k):fMk.add(k);
+      b.setAttribute("aria-pressed",fMk.has(k)); registro()}; mk.appendChild(b)});
+  const rc=document.getElementById("f-ric");
+  Object.entries(V.ricavi).forEach(([k,eti])=>{
+    const b=el("button","chip",eti); b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{fRic.has(k)?fRic.delete(k):fRic.add(k);
+      b.setAttribute("aria-pressed",fRic.has(k)); registro()}; rc.appendChild(b)});
+  const tgb=document.getElementById("f-tgt");
+  Object.entries(V.target).forEach(([k,eti])=>{
+    const b=el("button","chip",eti); b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{fTgt.has(k)?fTgt.delete(k):fTgt.add(k);
+      b.setAttribute("aria-pressed",fTgt.has(k)); registro()}; tgb.appendChild(b)});
+})();
+function registro(){
+  let set=OP.filter(o=>{
+    if(fMk.size&&!fMk.has(o.marcatura)) return false;
+    if(fRic.size&&!o.ricavo.some(r=>fRic.has(r))) return false;
+    if(fTgt.size&&!o.target.some(t=>fTgt.has(t))) return false;
+    if(q&&!senza(o.nome+" "+o.argomento+" "+o.meccanismo+" "+o.note).includes(q)) return false;
+    return true});
+  set.sort((a,b)=>{const x=a[ord],y=b[ord];
+    return typeof x==="string"?(asc?x.localeCompare(y,"it"):y.localeCompare(x,"it")):(asc?x-y:y-x)});
+  const tb=document.getElementById("tbody"); tb.innerHTML="";
+  set.forEach(o=>{
+    const tr=el("tr",o.noi?"noi":"");
+    if(o.archiviato) tr.classList.add("arch");
+    tr.innerHTML=`<td class="nome">${esc(o.nome)}${o.nuovo?' <span class="tag acc">nuovo</span>':""}${
+      o.archiviato?' <span class="tag arch">archiviato</span>':""}</td>
+      <td style="color:var(--ink2)">${esc(V.arene[o.arena])}</td>
+      <td>${barre(o.oi)}</td><td>${barre(o.vb)}</td><td>${barre(o.ai)}</td><td>${barre(o.ma)}</td>
+      <td style="color:var(--ink2)">${esc(DELIV[o.delivery])}</td>
+      <td style="color:var(--ink2)">${esc(V.ingressi[o.ingresso])}</td>
+      <td style="color:var(--ink2)">${o.prezzo==="si"?"pubblico":o.prezzo==="parziale"?"parziale":"—"}</td>
+      <td><i class="pt" style="display:inline-block;background:${o.noi?"var(--ink)":COLM[o.minaccia]}"></i></td>
+      <td><span class="mk mk-${o.marcatura}">${o.marcatura}</span></td>`;
+    tr.onclick=()=>apri(o.slug); tb.appendChild(tr);
+  });
+  document.getElementById("conta").innerHTML=
+    `<b>${set.length}</b> su ${OP.length} · <b>${set.filter(o=>o.minaccia===3).length}</b> a minaccia frontale`;
+}
+registro();
+(function(){
+  if(!ARC.length) return;
+  document.getElementById("nota-arch").innerHTML=`<div class="nota" style="margin:0 0 18px">
+    <b>${ARC.length} operator${ARC.length===1?"e archiviato":"i archiviati"}</b>, ${
+    ARC.map(o=>esc(o.nome)).join(", ")}: ${ARC.length===1?"resta":"restano"} a registro ma
+    ${ARC.length===1?"non entra":"non entrano"} in mappa, somiglianza, battlecard e conti
+    della sintesi. La riga sopravvive con la motivazione, come prescrive il metodo della V2,
+    perché fra sei mesi nessuno li rimetta dentro senza sapere perché erano usciti.</div>`;
+})();
+
+/* ---------- segnali ---------- */
+(function(){
+  const tl=document.getElementById("tl");
+  const tutti=[...D.contesto];
+  ATT.forEach(o=>o.segnali.forEach(s=>tutti.push({data:s.data,testo:`<b>${esc(o.nome)}</b> — ${esc(s.testo)}`,mk:s.mk,tipo:"concorrenza"})));
+  const ord=t=>{const m=t.match(/(\d{2})\/(\d{4})$/); if(m) return m[2]+m[1];
+    const y=t.match(/(\d{4})/); return y?y[1]+"00":"999999"};
+  tutti.sort((a,b)=>ord(a.data).localeCompare(ord(b.data)));
+  tutti.forEach(e=>{
+    tl.appendChild(el("div","ev "+e.tipo,
+      `<span class="d">${esc(e.data)}</span> <span class="mk mk-${e.mk}">${e.mk}</span>
+       <p>${e.testo.includes("<b>")?e.testo:esc(e.testo)}</p>`));
+  });
+  const c=document.getElementById("incertezze");
+  D.incertezze.forEach(i=>c.appendChild(el("div","inc",
+    `<b>${esc(i.cosa)}</b><p class="p">${esc(i.perche)}</p>
+     <p class="c">Si chiude con: ${esc(i.come)}</p>`)));
+})();
+
+/* ---------- scheda ---------- */
+const riga=(k,v,cl)=>v?`<div class="riga"><p class="k">${k}</p><p class="v ${cl||""}">${esc(v)}</p></div>`:"";
+function apri(slug){
+  const o=OP.find(x=>x.slug===slug);
+  document.getElementById("drawer-c").innerHTML=`
+    <p style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--acc);margin:0 0 6px;font-weight:500">${esc(V.arene[o.arena])}</p>
+    <h3>${esc(o.nome)}</h3>
+    <p style="color:var(--ink3);font-family:var(--mono);font-size:12px;margin:0 0 6px">
+      ${esc(o.sede)} · ${o.anno} · ${o.team?o.team+" persone":"organico non noto"}
+      · ${esc(o.fonte)} · <span class="mk mk-${o.marcatura}">${o.marcatura}</span></p>
+    ${o.noi?"":`<p style="margin:0 0 16px"><span class="tag acc">somiglianza con noi ${somiglianza(o)}%</span></p>`}
+    ${o.archiviato?`<div class="riga" style="border-top:2px solid var(--m2);background:var(--m2b);
+      margin:0 -14px;padding:14px"><p class="k" style="color:var(--m2)">Archiviato — fuori dal set competitivo</p>
+      <p class="v">${esc(o.motivo_archivio)}</p></div>`:""}
+    ${riga("Payoff",o.payoff,"cit")}
+    ${riga("Argomento di vendita",o.argomento)}
+    ${riga("Meccanismo di acquisizione",o.meccanismo)}
+    ${riga("Cosa dirà contro di noi",o.contro_noi)}
+    ${riga("Cosa rispondiamo",o.contro_loro)}
+    <div class="riga"><p class="k">Sovrapposizione con le nostre linee</p><p class="v">
+      Open Innovation ${barre(o.oi)} &nbsp; Venture Building ${barre(o.vb)}<br>
+      AI Adoption ${barre(o.ai)} &nbsp; M&amp;A ${barre(o.ma)}</p></div>
+    ${riga("Fatturato",o.fatturato)}
+    ${riga("Prezzi",o.prezzo_nota)}
+    <div class="riga"><p class="k">Modello di ricavo</p><p class="v">
+      ${o.ricavo.map(r=>`<span class="tag">${esc(V.ricavi[r])}</span>`).join("")}</p></div>
+    <div class="riga"><p class="k">Segmenti</p><p class="v">
+      ${o.target.map(t=>`<span class="tag">${esc(V.target[t])}</span>`).join("")}</p></div>
+    <div class="riga"><p class="k">Delivery · rischio · territorio verbale</p><p class="v">
+      Arriva fino a <b>${esc(DELIV[o.delivery].toLowerCase())}</b> · rischio
+      ${o.rischio==="si"?"condiviso col cliente":o.rischio==="parziale"?"parzialmente condiviso":"tutto sul cliente"}
+      · territorio: <b>${esc(V.territori[o.territorio].eti.toLowerCase())}</b></p></div>
+    ${o.segnali.length?`<div class="riga"><p class="k">Segnali datati</p>${o.segnali.map(s=>
+      `<p class="v" style="margin-bottom:6px"><b>${esc(s.data)}</b> — ${esc(s.testo)}</p>`).join("")}</div>`:""}
+    ${(o.catalogo&&o.catalogo.length)?`<div class="riga"><p class="k">Catalogo · ${
+      o.catalogo.length} servizi mappati</p>${o.catalogo.map(x=>
+      `<p class="v" style="margin-bottom:8px"><b>${esc(x.nome)}</b>
+       <span class="tag">${esc(V.tipi[x.tipo])}</span><br>
+       <span style="color:var(--ink2);font-size:13.5px">${esc(x.consegna)}<br>
+       Durata: ${esc(x.durata)} · Prezzo: ${esc(x.prezzo)}</span></p>`).join("")}</div>`:
+      '<div class="riga"><p class="k">Catalogo</p><p class="v" style="color:var(--ink3)">Non ancora mappato a servizi.</p></div>'}
+    ${riga("Note",o.note)}
+    ${o.noi?"":`<button class="btn" onclick="aggiungi('${o.slug}')">＋ Confronto</button>`}`;
+  document.getElementById("drawer").classList.add("on");
+  document.getElementById("velo").classList.add("on");
+}
+const chiudi=()=>{document.getElementById("drawer").classList.remove("on");
+  document.getElementById("velo").classList.remove("on")};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")chiudi()});
+
+/* ---------- confronto ---------- */
+let CFR=[];
+function aggiungi(slug){
+  if(!CFR.includes(slug)&&CFR.length<3) CFR.push(slug);
+  chiudi(); confronto(); document.querySelectorAll("#nav button")[3].click();
+}
+const togli=s=>{CFR=CFR.filter(x=>x!==s); confronto()};
+function confronto(){
+  const c=document.getElementById("cfr");
+  if(!CFR.length){c.innerHTML=`<div class="vuoto">Nessun operatore selezionato.<br>
+    Apri una scheda dalla mappa, dalle arene o dal registro e premi «confronto».</div>`; return}
+  const set=[NOI,...CFR.map(s=>OP.find(o=>o.slug===s))];
+  const R=[["Arena",o=>V.arene[o.arena]],["Origine",o=>V.origini[o.origine]],
+    ["Somiglianza con noi",o=>o.noi?"—":somiglianza(o)+"%"],
+    ["Payoff",o=>o.payoff||"—"],["Argomento di vendita",o=>o.argomento],
+    ["Meccanismo di acquisizione",o=>o.meccanismo],
+    ["Cosa dirà contro di noi",o=>o.contro_noi||"—"],["Cosa rispondiamo",o=>o.contro_loro||"—"],
+    ["Open Innovation",o=>SCALA[o.oi]],["Venture Building",o=>SCALA[o.vb]],
+    ["AI Adoption",o=>SCALA[o.ai]],["M&A buy-side",o=>SCALA[o.ma]],
+    ["Fin dove arriva",o=>DELIV[o.delivery]],
+    ["Modello di ricavo",o=>o.ricavo.map(r=>V.ricavi[r]).join(" · ")],
+    ["Segmenti",o=>o.target.map(t=>V.target[t]).join(" · ")],
+    ["Fatturato",o=>o.fatturato],["Prezzi",o=>o.prezzo_nota],
+    ["Rischio condiviso",o=>o.rischio==="si"?"Sì":o.rischio==="parziale"?"Parziale":"No"],
+    ["Prove di esecuzione",o=>PROVE[o.prove]],
+    ["Territorio verbale",o=>V.territori[o.territorio].eti],
+    ["Affidabilità del dato",o=>({V:"Verificato",D:"Dichiarato",S:"Stimato",N:"Non trovato"})[o.marcatura]]];
+  c.innerHTML=`<table><thead><tr><th class="rig"></th>${set.map(o=>
+    `<td><p class="capo">${esc(o.nome)}</p>${o.noi?'<span class="tag acc">noi</span>':
+      `<button class="chip" onclick="togli('${o.slug}')">togli</button>`}</td>`).join("")}</tr></thead>
+    <tbody>${R.map(([k,f])=>`<tr><th class="rig">${k}</th>${set.map(o=>
+      `<td${o.noi?' style="background:var(--pan2)"':""}>${esc(f(o))}</td>`).join("")}</tr>`).join("")}
+    </tbody></table>`;
+}
+confronto();
+</script>
+</body>
+</html>
