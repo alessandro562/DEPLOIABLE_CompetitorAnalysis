@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analisi competitor V2 — Deploiable</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Sans:ital,wght@0,300..600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================ FONDAMENTA */
+:root{
+  --carta:#F3F0E9; --carta-2:#EBE7DC; --carta-3:#E1DCCE;
+  --inchiostro:#1A1815; --inchiostro-2:#4C473C; --inchiostro-3:#78715F;
+  --filo:#D4CDBD; --filo-forte:#BFB6A1;
+  --ossido:#9B3B22; --ossido-scuro:#7C2E19; --ossido-velo:#9B3B2214;
+
+  --v:#1F6B45; --d:#8F5A0C; --s:#43569C; --n:#6E6A5B;
+  --v-velo:#1F6B4518; --d-velo:#8F5A0C18; --s-velo:#43569C18; --n-velo:#6E6A5B18;
+
+  --p5:#7C2E19; --p4:#A85231; --p3:#C08159; --p2:#D2AC90; --p1:#E2CDBA; --p0:#B9B1A0;
+
+  --display:"Newsreader",Iowan Old Style,Palatino Linotype,Georgia,serif;
+  --testo:"IBM Plex Sans",Segoe UI,Helvetica Neue,Arial,sans-serif;
+  --dati:"IBM Plex Mono",SFMono-Regular,Menlo,Consolas,monospace;
+
+  --barra:264px; --tetto:58px;
+  --ombra:0 1px 0 #FFFFFF80, 0 1px 2px #1A181514, 0 8px 24px -12px #1A181524;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --carta:#141310; --carta-2:#1C1B17; --carta-3:#24221D;
+    --inchiostro:#EFEADF; --inchiostro-2:#B8B1A2; --inchiostro-3:#8A8474;
+    --filo:#332F27; --filo-forte:#453F34;
+    --ossido:#E08055; --ossido-scuro:#F09A72; --ossido-velo:#E0805518;
+    --v:#5FBF8E; --d:#D9A445; --s:#8AA0E8; --n:#9A9384;
+    --v-velo:#5FBF8E1A; --d-velo:#D9A4451A; --s-velo:#8AA0E81A; --n-velo:#9A93841A;
+    --p5:#F09A72; --p4:#D07E54; --p3:#A9643F; --p2:#7C4A2F; --p1:#563322; --p0:#4A463C;
+    --ombra:0 1px 2px #00000060, 0 8px 24px -12px #00000080;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--tetto) + 20px)}
+body{
+  margin:0; background:var(--carta); color:var(--inchiostro);
+  font-family:var(--testo); font-size:15px; line-height:1.62;
+  -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums lining-nums;
+}
+/* grana: dà profondità alla carta senza colore in più */
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23g)' opacity='.055'/></svg>");
+  mix-blend-mode:multiply;
+}
+@media (prefers-color-scheme:dark){body::before{mix-blend-mode:screen; opacity:.35}}
+::selection{background:var(--ossido); color:var(--carta)}
+
+/* ============================================================ IMPALCATURA */
+.tetto{
+  position:fixed; top:0; left:0; right:0; height:var(--tetto); z-index:60;
+  display:flex; align-items:center; gap:18px; padding:0 22px;
+  background:color-mix(in srgb,var(--carta) 88%,transparent);
+  backdrop-filter:blur(14px) saturate(1.3);
+  border-bottom:1px solid var(--filo);
+}
+.marchio{display:flex; align-items:baseline; gap:10px; flex-shrink:0}
+.marchio b{
+  font-family:var(--display); font-weight:600; font-size:19px; letter-spacing:-.015em;
+}
+.marchio i{
+  font-family:var(--display); font-style:italic; font-weight:400;
+  color:var(--ossido); font-size:19px;
+}
+.marchio span{
+  font-family:var(--dati); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--inchiostro-3); padding-left:10px; border-left:1px solid var(--filo);
+}
+
+.barra{
+  position:fixed; top:var(--tetto); bottom:0; left:0; width:var(--barra); z-index:50;
+  overflow-y:auto; overscroll-behavior:contain;
+  border-right:1px solid var(--filo); background:var(--carta-2);
+  padding:22px 0 60px;
+}
+.barra::-webkit-scrollbar{width:9px}
+.barra::-webkit-scrollbar-thumb{background:var(--filo-forte); border-radius:9px; border:3px solid var(--carta-2)}
+
+.gruppo{margin-bottom:26px}
+.gruppo > h6{
+  margin:0 0 8px; padding:0 22px;
+  font-family:var(--dati); font-size:9.5px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--inchiostro-3);
+}
+.barra a{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:6px 22px; color:var(--inchiostro-2); text-decoration:none;
+  font-size:13.5px; line-height:1.35; border-left:2px solid transparent;
+  transition:color .12s, background .12s, border-color .12s;
+}
+.barra a:hover{color:var(--inchiostro); background:var(--ossido-velo)}
+.barra a.attivo{
+  color:var(--inchiostro); border-left-color:var(--ossido);
+  background:var(--ossido-velo); font-weight:500;
+}
+.barra a em{
+  font-style:normal; font-family:var(--dati); font-size:10.5px; color:var(--inchiostro-3);
+}
+
+main{
+  position:relative; z-index:1;
+  margin-left:var(--barra); padding:calc(var(--tetto) + 40px) 46px 140px;
+  max-width:1180px;
+}
+
+/* ============================================================ FILTRI */
+.strumenti{display:flex; align-items:center; gap:14px; flex:1; min-width:0}
+.cerca{position:relative; flex:1; max-width:390px}
+.cerca input{
+  width:100%; height:34px; padding:0 34px 0 12px;
+  font-family:var(--testo); font-size:13.5px; color:var(--inchiostro);
+  background:var(--carta-2); border:1px solid var(--filo);
+  border-radius:3px; outline:none; transition:border-color .15s, box-shadow .15s;
+}
+.cerca input:focus{border-color:var(--ossido); box-shadow:0 0 0 3px var(--ossido-velo)}
+.cerca input::placeholder{color:var(--inchiostro-3)}
+.cerca kbd{
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  font-family:var(--dati); font-size:10px; color:var(--inchiostro-3);
+  border:1px solid var(--filo); border-radius:3px; padding:1px 5px; pointer-events:none;
+}
+.cerca input:focus + kbd{opacity:0}
+
+.esiti{
+  position:absolute; top:40px; left:0; right:0; max-height:60vh; overflow-y:auto;
+  background:var(--carta); border:1px solid var(--filo-forte); border-radius:4px;
+  box-shadow:var(--ombra); display:none; z-index:70;
+}
+.esiti.aperto{display:block}
+.esiti button{
+  display:block; width:100%; text-align:left; padding:9px 13px; border:0;
+  background:none; cursor:pointer; font-family:var(--testo); font-size:13px;
+  color:var(--inchiostro); border-bottom:1px solid var(--filo);
+}
+.esiti button:last-child{border-bottom:0}
+.esiti button:hover,.esiti button.sel{background:var(--ossido-velo)}
+.esiti button small{
+  display:block; font-family:var(--dati); font-size:10px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--inchiostro-3); margin-top:2px;
+}
+.esiti .vuoto{padding:14px; font-size:13px; color:var(--inchiostro-3)}
+
+.marcatori{display:flex; align-items:center; gap:6px; flex-shrink:0}
+.marcatori > span{
+  font-family:var(--dati); font-size:9.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--inchiostro-3); margin-right:2px;
+}
+.mkbtn{
+  font-family:var(--dati); font-size:11px; font-weight:600; line-height:1;
+  width:25px; height:25px; border-radius:3px; cursor:pointer;
+  border:1px solid var(--filo-forte); background:var(--carta-2); color:var(--inchiostro-3);
+  transition:all .13s;
+}
+.mkbtn[data-on="1"][data-mk="V"]{background:var(--v); border-color:var(--v); color:#fff}
+.mkbtn[data-on="1"][data-mk="D"]{background:var(--d); border-color:var(--d); color:#fff}
+.mkbtn[data-on="1"][data-mk="S"]{background:var(--s); border-color:var(--s); color:#fff}
+.mkbtn[data-on="1"][data-mk="N"]{background:var(--n); border-color:var(--n); color:#fff}
+.solov{
+  font-family:var(--dati); font-size:10px; font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; padding:6px 11px; border-radius:3px; cursor:pointer;
+  border:1px solid var(--filo-forte); background:var(--carta-2); color:var(--inchiostro-2);
+  transition:all .13s; white-space:nowrap;
+}
+.solov:hover{border-color:var(--v); color:var(--v)}
+.solov[aria-pressed="true"]{background:var(--v); border-color:var(--v); color:#fff}
+
+/* ============================================================ MARCATORI */
+.mk{
+  display:inline-block; font-family:var(--dati); font-size:10.5px; font-weight:600;
+  line-height:1.5; padding:0 4px; border-radius:2px; vertical-align:1px;
+  cursor:help; transition:opacity .15s;
+}
+.mk-V{color:var(--v); background:var(--v-velo); box-shadow:inset 0 0 0 1px var(--v-velo)}
+.mk-D{color:var(--d); background:var(--d-velo)}
+.mk-S{color:var(--s); background:var(--s-velo)}
+.mk-N{color:var(--n); background:var(--n-velo)}
+body.spegni-V .mk-V,body.spegni-D .mk-D,body.spegni-S .mk-S,body.spegni-N .mk-N{
+  opacity:.18; background:none;
+}
+/* modalità «solo verificato»: sbiadisce ciò che non porta [V] */
+body.modo-verificato .doc p:not(:has(.mk-V)),
+body.modo-verificato .doc li:not(:has(.mk-V)),
+body.modo-verificato .doc tbody tr:not(:has(.mk-V)),
+body.modo-verificato .doc blockquote:not(:has(.mk-V)),
+body.modo-verificato .motivo:not(:has(.mk-V)){
+  opacity:.24; filter:saturate(.15);
+}
+body.modo-verificato .doc h2,
+body.modo-verificato .doc h3,
+body.modo-verificato .doc h4{opacity:1}
+
+/* ============================================================ TIPOGRAFIA */
+.sezione{display:none; animation:entra .3s ease both}
+.sezione.viva{display:block}
+@keyframes entra{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+
+.titolone{margin:0 0 6px; font-family:var(--display); font-weight:500;
+  font-size:clamp(30px,4.2vw,46px); line-height:1.06; letter-spacing:-.025em}
+.titolone em{font-style:italic; color:var(--ossido)}
+.occhiello{
+  font-family:var(--dati); font-size:10.5px; letter-spacing:.17em; text-transform:uppercase;
+  color:var(--ossido); margin:0 0 14px; display:flex; align-items:center; gap:10px;
+}
+.occhiello::after{content:""; flex:1; height:1px; background:var(--filo)}
+.sommario{font-family:var(--display); font-size:19px; line-height:1.5;
+  color:var(--inchiostro-2); max-width:64ch; margin:0 0 32px}
+
+.doc{max-width:none}
+.doc h2{
+  font-family:var(--display); font-weight:600; font-size:27px; line-height:1.18;
+  letter-spacing:-.02em; margin:52px 0 14px; padding-top:20px;
+  border-top:1px solid var(--filo);
+}
+.doc h2:first-child{margin-top:0; border-top:0; padding-top:0}
+.doc h3{font-family:var(--display); font-weight:600; font-size:20px; margin:34px 0 10px; letter-spacing:-.012em}
+.doc h4{font-family:var(--dati); font-weight:600; font-size:11.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--inchiostro-3); margin:26px 0 8px}
+.doc p{margin:0 0 14px; max-width:78ch}
+.doc ul,.doc ol{margin:0 0 16px; padding-left:20px; max-width:78ch}
+.doc li{margin-bottom:6px}
+.doc li::marker{color:var(--ossido)}
+.doc a{color:var(--ossido); text-decoration:none; border-bottom:1px solid var(--ossido-velo);
+  word-break:break-word}
+.doc a:hover{border-bottom-color:var(--ossido)}
+.doc strong{font-weight:600}
+.doc code{font-family:var(--dati); font-size:.87em; background:var(--carta-3);
+  padding:1px 5px; border-radius:3px; word-break:break-word}
+.doc blockquote{
+  margin:20px 0; padding:14px 20px; border-left:2px solid var(--ossido);
+  background:var(--carta-2); border-radius:0 3px 3px 0;
+}
+.doc blockquote p:last-child{margin-bottom:0}
+.doc hr{border:0; border-top:1px solid var(--filo); margin:36px 0}
+.doc table{
+  width:100%; border-collapse:collapse; margin:18px 0 24px; font-size:13px;
+  display:block; overflow-x:auto;
+}
+.doc th{
+  text-align:left; font-family:var(--dati); font-size:10px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--inchiostro-3);
+  padding:8px 12px 8px 0; border-bottom:1px solid var(--filo-forte); white-space:nowrap;
+}
+.doc td{padding:10px 12px 10px 0; border-bottom:1px solid var(--filo); vertical-align:top;
+  min-width:90px}
+.doc tbody tr:hover{background:var(--ossido-velo)}
+
+/* ============================================================ APERTURA */
+.cifre{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1px; background:var(--filo); border:1px solid var(--filo);
+  border-radius:4px; overflow:hidden; margin:0 0 40px;
+}
+.cifra{background:var(--carta); padding:20px 22px}
+.cifra b{
+  display:block; font-family:var(--display); font-weight:500; font-size:38px;
+  line-height:1; letter-spacing:-.03em; margin-bottom:6px;
+}
+.cifra b small{font-size:.5em; color:var(--inchiostro-3); font-weight:400; letter-spacing:0}
+.cifra > span{
+  display:block; font-size:12.5px; color:var(--inchiostro-2); line-height:1.4;
+}
+.cifra.forte b{color:var(--ossido)}
+.cifra.nulla b{color:var(--inchiostro-3)}
+
+.riquadri{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin:0 0 40px}
+.riquadro{
+  background:var(--carta-2); border:1px solid var(--filo); border-radius:4px;
+  padding:20px 22px; box-shadow:var(--ombra);
+}
+.riquadro h4{
+  margin:0 0 8px; font-family:var(--dati); font-size:10px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ossido);
+}
+.riquadro p{margin:0; font-size:13.5px; line-height:1.55; color:var(--inchiostro-2)}
+.riquadro p + p{margin-top:9px}
+
+/* grafici: magnitudine, una sola tinta, etichette dirette */
+.grafico{margin:0 0 40px}
+.grafico > figcaption{
+  font-family:var(--dati); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--inchiostro-3); margin-bottom:14px;
+}
+.riga{display:grid; grid-template-columns:132px 1fr 96px; gap:14px; align-items:center;
+  padding:5px 0; font-size:13px}
+.riga .eti{color:var(--inchiostro-2); text-align:right; font-size:12.5px; line-height:1.25}
+.riga .val{font-family:var(--dati); font-size:12px; color:var(--inchiostro-2)}
+.trave{display:block; height:15px; border-radius:0 4px 4px 0; min-width:3px;
+  transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.riga:hover .trave{filter:brightness(1.08)}
+
+/* ============================================================ OPERATORI */
+.pannello{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 20px;
+  padding:14px 16px; background:var(--carta-2); border:1px solid var(--filo); border-radius:4px;
+}
+.pannello > span{
+  font-family:var(--dati); font-size:9.5px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--inchiostro-3); margin-right:2px;
+}
+.pannello + .pannello{margin-top:-12px}
+.chip{
+  font-family:var(--dati); font-size:11px; font-weight:500; letter-spacing:.04em;
+  padding:5px 11px; border-radius:99px; cursor:pointer;
+  border:1px solid var(--filo-forte); background:var(--carta); color:var(--inchiostro-2);
+  transition:all .13s;
+}
+.chip:hover{border-color:var(--ossido); color:var(--ossido)}
+.chip[aria-pressed="true"]{background:var(--inchiostro); border-color:var(--inchiostro); color:var(--carta)}
+.chip.p5[aria-pressed="true"]{background:var(--p5); border-color:var(--p5); color:#fff}
+.chip.p4[aria-pressed="true"]{background:var(--p4); border-color:var(--p4); color:#fff}
+.chip.p3[aria-pressed="true"]{background:var(--p3); border-color:var(--p3); color:#fff}
+.chip.p2[aria-pressed="true"]{background:var(--p2); border-color:var(--p2); color:var(--inchiostro)}
+.chip.p1[aria-pressed="true"]{background:var(--p1); border-color:var(--p1); color:var(--inchiostro)}
+.chip.p0[aria-pressed="true"]{background:var(--p0); border-color:var(--p0); color:var(--inchiostro)}
+
+.conteggio{font-family:var(--dati); font-size:11.5px; color:var(--inchiostro-3); margin:0 0 12px}
+.conteggio b{color:var(--inchiostro); font-weight:600}
+
+table.elenco{width:100%; border-collapse:collapse; font-size:13.5px}
+table.elenco th{
+  position:sticky; top:var(--tetto); z-index:5; background:var(--carta);
+  text-align:left; font-family:var(--dati); font-size:9.5px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--inchiostro-3);
+  padding:9px 12px 9px 0; border-bottom:1px solid var(--filo-forte);
+}
+table.elenco td{padding:12px 12px 12px 0; border-bottom:1px solid var(--filo); vertical-align:top}
+table.elenco tbody tr:hover{background:var(--ossido-velo)}
+.pt{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:3px; color:#fff;
+  font-family:var(--dati); font-size:12px; font-weight:600;
+}
+.pt.v5{background:var(--p5)} .pt.v4{background:var(--p4)} .pt.v3{background:var(--p3)}
+.pt.v2{background:var(--p2); color:var(--inchiostro)} .pt.v1{background:var(--p1); color:var(--inchiostro)}
+.pt.v0{background:var(--p0); color:var(--inchiostro); font-size:9px}
+.nomeop{font-weight:600; font-size:14px}
+.nomeop small{display:block; font-weight:400; font-size:12px; color:var(--inchiostro-3)}
+.motivo{color:var(--inchiostro-2); font-size:13px; line-height:1.5}
+.vaischeda{
+  font-family:var(--dati); font-size:10px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ossido); background:var(--ossido-velo);
+  border:1px solid transparent; padding:4px 9px; border-radius:3px; cursor:pointer;
+  white-space:nowrap; transition:all .13s;
+}
+.vaischeda:hover{border-color:var(--ossido)}
+.niente{padding:36px 0; color:var(--inchiostro-3); font-size:14px}
+
+/* ============================================================ SCHEDE */
+.duecolonne{display:grid; grid-template-columns:230px 1fr; gap:34px; align-items:start}
+.indice{position:sticky; top:calc(var(--tetto) + 24px)}
+.indice button{
+  display:block; width:100%; text-align:left; padding:7px 10px; margin-bottom:2px;
+  border:0; border-left:2px solid transparent; background:none; cursor:pointer;
+  font-family:var(--testo); font-size:13px; color:var(--inchiostro-2); border-radius:0 3px 3px 0;
+  transition:all .12s;
+}
+.indice button:hover{background:var(--ossido-velo); color:var(--inchiostro)}
+.indice button.attivo{
+  background:var(--ossido-velo); border-left-color:var(--ossido);
+  color:var(--inchiostro); font-weight:600;
+}
+.testata{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:20px;
+  padding-bottom:16px; margin-bottom:24px; border-bottom:2px solid var(--inchiostro);
+}
+.testata h2{margin:0; font-family:var(--display); font-size:32px; font-weight:600; letter-spacing:-.02em}
+.legenda{
+  display:flex; flex-wrap:wrap; gap:16px; padding:14px 18px; margin:0 0 26px;
+  background:var(--carta-2); border:1px solid var(--filo); border-radius:4px;
+  font-size:12.5px; color:var(--inchiostro-2);
+}
+.legenda div{display:flex; align-items:center; gap:7px}
+
+/* ============================================================ VARIE */
+.avviso{
+  padding:16px 20px; margin:0 0 28px; border-radius:4px;
+  border:1px solid var(--filo-forte); border-left:3px solid var(--ossido);
+  background:var(--carta-2); font-size:13.5px; line-height:1.55; color:var(--inchiostro-2);
+}
+.avviso b{color:var(--inchiostro)}
+.mobileapri{display:none}
+
+footer{
+  margin-left:var(--barra); padding:28px 46px 60px; border-top:1px solid var(--filo);
+  font-size:12px; color:var(--inchiostro-3); position:relative; z-index:1;
+}
+footer code{font-family:var(--dati); font-size:11px}
+
+@media (max-width:820px){
+  :root{--tetto:100px}
+  .tetto{
+    height:auto; min-height:var(--tetto); flex-wrap:wrap; align-content:center;
+    padding:9px 14px; gap:9px;
+  }
+  .mobileapri{order:0} .marchio{order:1; flex:1}
+  .strumenti{order:2; flex-basis:100%; gap:9px}
+  .cerca{max-width:none}
+  .marcatori{gap:5px}
+  .solov{padding:6px 8px; font-size:9px}
+  table.elenco th{top:0}
+}
+@media (max-width:1000px){
+  :root{--barra:0px}
+  .barra{
+    transform:translateX(-280px); width:280px; transition:transform .25s ease;
+    box-shadow:var(--ombra);
+  }
+  body.menu .barra{transform:none}
+  main,footer{margin-left:0; padding-left:20px; padding-right:20px}
+  .mobileapri{
+    display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;
+    border:1px solid var(--filo-forte); border-radius:3px; background:var(--carta-2);
+    color:var(--inchiostro); cursor:pointer; font-size:15px; flex-shrink:0;
+  }
+  .marchio span{display:none}
+  .marcatori > span{display:none}
+  .duecolonne{grid-template-columns:1fr}
+  .indice{position:static; margin-bottom:22px; display:flex; flex-wrap:wrap; gap:4px}
+  .indice button{width:auto; border:1px solid var(--filo); border-radius:3px}
+}
+@media print{
+  .tetto,.barra,.pannello,.esiti,.mobileapri{display:none !important}
+  main,footer{margin:0; padding:0; max-width:none}
+  .sezione{display:block !important}
+  body{background:#fff; font-size:10.5pt}
+  body::before{display:none}
+  .doc h2{page-break-after:avoid} .doc table{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="tetto">
+  <button class="mobileapri" id="apri" aria-label="Apri il menu">☰</button>
+  <div class="marchio"><b>Analisi</b><i>competitor</i><span>V2 · 11.08.2026</span></div>
+  <div class="strumenti">
+    <div class="cerca">
+      <input id="q" type="search" placeholder="Cerca un operatore, una sezione, un tema…"
+             autocomplete="off" spellcheck="false" aria-label="Cerca">
+      <kbd>/</kbd>
+      <div class="esiti" id="esiti"></div>
+    </div>
+    <div class="marcatori">
+      <span>Affidabilità</span>
+      <button class="mkbtn" data-mk="V" data-on="1" title="verificato da fonte terza controllabile">V</button>
+      <button class="mkbtn" data-mk="D" data-on="1" title="dichiarato dall'operatore">D</button>
+      <button class="mkbtn" data-mk="S" data-on="1" title="stimato — aggregatore o banca dati">S</button>
+      <button class="mkbtn" data-mk="N" data-on="1" title="cercato e non trovato">N</button>
+      <button class="solov" id="solov" aria-pressed="false"
+              title="Sbiadisce tutto ciò che non poggia su una fonte terza controllabile">solo verificato</button>
+    </div>
+  </div>
+</header>
+
+<nav class="barra" id="barra"></nav>
+
+<main id="main"></main>
+
+<footer>
+  Generato dai file markdown in <code>analisi-competitor/</code> — quelli restano la fonte.
+  Per rigenerare questa pagina dopo una modifica: <code>python3 dashboard/estrai.py &amp;&amp; python3 dashboard/costruisci.py</code>.
+  <br>Nessun dato esce da questo file: non ci sono chiamate di rete, non c'è tracciamento, non serve un server.
+</footer>
+
+<script id="dati" type="application/json">/*DATI*/</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("dati").textContent);
+
+/* ------------------------------------------------------------- struttura */
+const SEZIONI = [
+  {gruppo:"Da qui si parte", voci:[
+    {id:"apertura", eti:"Apertura", tipo:"apertura"},
+    {id:"finale",   eti:"Documento finale", tipo:"doc", doc:"finale",
+     occhiello:"Fase 8", titolo:"Il documento", sommario:"Le sette sezioni del metodo, dalla mappa del campo alle cinque conclusioni operative. È il file da leggere prima di una riunione."},
+    {id:"operatori",eti:"I 100 operatori", tipo:"operatori", conta:true},
+  ]},
+  {gruppo:"Il materiale", voci:[
+    {id:"schede",   eti:"Schede", tipo:"schede", conta:13},
+    {id:"prezzi",   eti:"Prezzi e ricavi", tipo:"doc", doc:"prezzi",
+     occhiello:"Prompt 4", titolo:"Modelli di ricavo <em>e prezzi</em>", sommario:"Come si fanno pagare, e i 77 contratti pubblici che sono l'unica fonte di prezzo verificabile su questo mercato."},
+    {id:"territori",eti:"Firme e territori", tipo:"doc", doc:"firme",
+     occhiello:"Prompt 3", titolo:"Territori <em>di posizionamento</em>", sommario:"Quarantasei firme verbali raccolte alla lettera, e la mappa di che cosa è affollato e che cosa resta libero."},
+    {id:"sintesi",  eti:"Sintesi strategica", tipo:"doc", doc:"sintesi", giudizi:true,
+     occhiello:"Prompt 5", titolo:"Sintesi <em>strategica</em>", sommario:"Sovrapposizione con le nostre quattro linee e argomenti in gara. È l'unico documento che contiene giudizi."},
+  ]},
+  {gruppo:"Come è stato fatto", voci:[
+    {id:"scouting", eti:"Scouting", tipo:"scouting"},
+    {id:"screening",eti:"Screening", tipo:"doc", doc:"screening",
+     occhiello:"Fase 3", titolo:"Screening <em>rapido</em>", sommario:"I 93 operatori con punteggio da 1 a 5, gli otto campi per ciascuno, e i limiti da leggere prima di usare i punteggi."},
+    {id:"selezione",eti:"Selezione", tipo:"doc", doc:"selezione",
+     occhiello:"Fase 4", titolo:"Triage <em>e selezione</em>", sommario:"Chi merita una scheda completa e chi no. È l'unico passaggio che il metodo vuole umano."},
+    {id:"metodo",   eti:"Metodo", tipo:"metodo"},
+  ]},
+  {gruppo:"Che cosa non sappiamo", voci:[
+    {id:"dubbi",    eti:"Incertezze", tipo:"doc", doc:"dubbi",
+     occhiello:"Registro", titolo:"Che cosa <em>non sappiamo</em>", sommario:"Oltre duecento voci: cosa non è stato verificato, e quale fonte servirebbe per chiuderlo. Si legge insieme a ogni scheda, non dopo."},
+    {id:"verifica", eti:"Verifica", tipo:"doc", doc:"verifica",
+     occhiello:"Controllo", titolo:"Verifica <em>avversariale</em>", sommario:"Sessanta affermazioni ricontrollate contro le fonti, undici rilievi, tutti corretti. E ciò che questa verifica non copre."},
+  ]},
+];
+
+const LOTTI = {
+  "1":"gestori di programmi e appalti", "2":"consulenza open innovation",
+  "3":"venture builder e startup studio", "4":"AI, M&A e nuovi entranti",
+  "5":"esteri, riferimenti di modello", "base":"base già mappata, mai screenata",
+};
+
+/* -------------------------------------------------------------- utilità */
+const el = (t,c,h)=>{const n=document.createElement(t); if(c)n.className=c; if(h!=null)n.innerHTML=h; return n;};
+const euro = n => n.toLocaleString("it-IT");
+const senzaAccenti = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const spoglia = h => h.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
+
+/* ------------------------------------------------------------ navigazione */
+const barra = document.getElementById("barra");
+SEZIONI.forEach(g=>{
+  const box = el("div","gruppo");
+  box.appendChild(el("h6",null,g.gruppo));
+  g.voci.forEach(v=>{
+    const a = el("a",null,`<span>${v.eti}</span>`);
+    a.href = "#" + v.id;
+    a.dataset.id = v.id;
+    if(v.conta) a.appendChild(el("em",null, v.conta===true ? D.operatori.length : v.conta));
+    box.appendChild(a);
+  });
+  barra.appendChild(box);
+});
+
+const main = document.getElementById("main");
+const TUTTE = SEZIONI.flatMap(g=>g.voci);
+
+function intestazione(v){
+  let h = "";
+  if(v.occhiello) h += `<p class="occhiello">${v.occhiello}</p>`;
+  if(v.titolo)    h += `<h1 class="titolone">${v.titolo}</h1>`;
+  if(v.sommario)  h += `<p class="sommario">${v.sommario}</p>`;
+  if(v.giudizi)   h += `<div class="avviso"><b>Attenzione: qui ci sono giudizi, non fatti.</b>
+    Le schede raccolgono fatti con la loro fonte; questo documento li interpreta. Ogni riga poggia su un fatto
+    documentato altrove, ma la valutazione — alta, media, bassa — è un'opinione dell'analisi, non un dato.</div>`;
+  return h;
+}
+
+TUTTE.forEach(v=>{
+  const s = el("section","sezione");
+  s.id = v.id;
+  if(v.tipo==="doc"){
+    s.innerHTML = intestazione(v) + `<div class="doc">${D.documenti[v.doc]||"<p>Documento non disponibile.</p>"}</div>`;
+  }
+  main.appendChild(s);
+});
+
+/* ------------------------------------------------------------- apertura */
+(function(){
+  const s = document.getElementById("apertura");
+  const perPunteggio = {};
+  D.operatori.forEach(o=>{const k=o.punteggio??0; perPunteggio[k]=(perPunteggio[k]||0)+1;});
+  const totContratti = D.contratti.reduce((a,c)=>a+c.totale,0);
+  const nContratti = D.contratti.reduce((a,c)=>a+c.n,0);
+
+  const cifre = [
+    {n:"100", t:"operatori mappati<br>93 screenati + 7 della base", forte:false},
+    {n:"13",  t:"schede complete<br>a 14 campi ciascuna", forte:false},
+    {n:euro(totContratti)+"&nbsp;€", t:`${nContratti} contratti pubblici<br>su 10 operatori <span class="mk mk-S">S</span>`, forte:true},
+    {n:"0",   t:"fatturati verificati<br>nessun operatore su 100", nulla:true},
+  ];
+  const gc = el("div","cifre");
+  cifre.forEach(c=>{
+    gc.appendChild(el("div","cifra"+(c.forte?" forte":"")+(c.nulla?" nulla":""),
+      `<b>${c.n}</b><span>${c.t}</span>`));
+  });
+
+  const maxP = Math.max(...Object.values(perPunteggio));
+  const tinte = {5:"var(--p5)",4:"var(--p4)",3:"var(--p3)",2:"var(--p2)",1:"var(--p1)",0:"var(--p0)"};
+  const eti = {5:"5 — frontali",4:"4 — una linea core",3:"3 — parziali",2:"2 — marginali",1:"1 — non concorrenti",0:"base, non screenati"};
+  let gp = `<figcaption>Operatori per punteggio di priorità</figcaption>`;
+  [5,4,3,2,1,0].forEach(p=>{
+    const n = perPunteggio[p]||0;
+    gp += `<div class="riga" title="${n} operatori a punteggio ${p===0?'—':p}">
+      <span class="eti">${eti[p]}</span>
+      <span><span class="trave" style="width:${(n/maxP*100).toFixed(1)}%;background:${tinte[p]}"></span></span>
+      <span class="val">${n} operatori</span></div>`;
+  });
+
+  const maxC = D.contratti[0].totale;
+  let gcon = `<figcaption>Contratti pubblici aggiudicati, totale per operatore <span class="mk mk-S">S</span></figcaption>`;
+  D.contratti.forEach(c=>{
+    gcon += `<div class="riga" title="${c.n} contratti, ${euro(c.totale)} €">
+      <span class="eti">${c.operatore}</span>
+      <span><span class="trave" style="width:${(c.totale/maxC*100).toFixed(1)}%;background:var(--p4)"></span></span>
+      <span class="val">${euro(c.totale)} €</span></div>`;
+  });
+
+  s.innerHTML = `
+    <p class="occhiello">Deploiable · analisi competitor</p>
+    <h1 class="titolone">Chi c'è nel campo, <em>e che cosa regge</em></h1>
+    <p class="sommario">Novantatré operatori trovati da sette angoli di ricerca, tredici analizzati a fondo,
+      quattro milioni di euro di contratti pubblici ricostruiti. Tutto quello che segue porta scritto
+      quanto è affidabile: è la sola cosa che distingue un'analisi da una raccolta di brochure.</p>
+    <div class="cifre">${gc.innerHTML}</div>
+    <div class="legenda">
+      <div><span class="mk mk-V">V</span> verificato da fonte terza controllabile</div>
+      <div><span class="mk mk-D">D</span> dichiarato dall'operatore</div>
+      <div><span class="mk mk-S">S</span> stimato, da aggregatore o banca dati</div>
+      <div><span class="mk mk-N">N</span> cercato e non trovato</div>
+    </div>
+    <div class="avviso"><b>Come si usa questa pagina.</b> I quattro pulsanti in alto a destra spengono e
+      accendono i marcatori. Il pulsante <b>solo verificato</b> sbiadisce tutto ciò che non poggia su una fonte
+      terza controllabile: è il modo più rapido per vedere quanto poco, di questo lavoro, sia davvero verificato —
+      e quale sia la prossima cosa da controllare. Premi <kbd style="font-family:var(--dati)">/</kbd> per cercare.</div>
+    <div class="riquadri">
+      <div class="riquadro"><h4>Risultato negativo 1</h4>
+        <p><b>Il venture building su commissione quasi non esiste in Italia.</b> Su 22 venture builder e startup
+        studio screenati, 4 vendono a un committente e 12 costruiscono solo per sé. Nessuno dei 4 espone un
+        cliente committente nominato.</p></div>
+      <div class="riquadro"><h4>Risultato negativo 2</h4>
+        <p><b>L'M&amp;A buy-side è presidiato da uno solo su 93.</b> Growth Capital — e le sue tre operazioni
+        documentate riguardano tutte lo stesso acquirente. Il vuoto però può essere di misurazione: i sette
+        angoli erano costruiti sul mestiere dell'innovazione, non su quello M&amp;A.</p></div>
+      <div class="riquadro"><h4>Risultato negativo 3</h4>
+        <p><b>Nessuno dei 46 payoff raccolti mette il prezzo o il rischio nella promessa.</b> E 26 operatori
+        italiani su 36 incassano a prescindere dall'esito. È il territorio di posizionamento più vuoto che ci sia.</p></div>
+    </div>
+    <figure class="grafico">${gp}</figure>
+    <figure class="grafico">${gcon}</figure>
+    <div class="avviso"><b>Il limite da tenere presente.</b> Il campione è il campo visibile da fonti aperte in
+      una sessione, non un censimento: la copertura dell'Open Innovation Lookout è intorno al 30%, gli elenchi
+      soci delle associazioni non sono stati estratti, LinkedIn e ANAC non erano consultabili. Lo screening è
+      stato fatto senza budget di ricerca, quindi i punteggi poggiano su ciò che ogni operatore dice di sé.
+      <b>Nessuno dei 100 ha un fatturato verificato.</b></div>`;
+})();
+
+/* ------------------------------------------------------------ operatori */
+(function(){
+  const s = document.getElementById("operatori");
+  s.innerHTML = `
+    <p class="occhiello">Fasi 1-3 · scouting, consolidamento, screening</p>
+    <h1 class="titolone">I cento <em>del campo</em></h1>
+    <p class="sommario">Novantatré emersi dai sette angoli di ricerca e screenati con punteggio da 1 a 5,
+      più i sette della base già mappati che non sono mai passati dallo screening — e per questo non hanno
+      un punteggio: inventarne uno sarebbe un dato falso.</p>
+    <div class="pannello" id="filtri-pt"><span>Punteggio</span></div>
+    <div class="pannello" id="filtri-lot"><span>Gruppo</span></div>
+    <p class="conteggio" id="conteggio"></p>
+    <table class="elenco">
+      <thead><tr><th style="width:44px">Pt.</th><th style="width:210px">Operatore</th>
+        <th>Perché ha questo punteggio</th><th style="width:96px"></th></tr></thead>
+      <tbody id="corpo"></tbody>
+    </table>
+    <p class="niente" id="niente" hidden>Nessun operatore con questi filtri.</p>`;
+
+  const statoPt = new Set(), statoLot = new Set();
+  const boxPt = document.getElementById("filtri-pt"), boxLot = document.getElementById("filtri-lot");
+
+  [5,4,3,2,1,0].forEach(p=>{
+    const b = el("button","chip p"+p, p===0 ? "base" : "punteggio "+p);
+    b.setAttribute("aria-pressed","false");
+    b.onclick = ()=>{ statoPt.has(p)?statoPt.delete(p):statoPt.add(p);
+      b.setAttribute("aria-pressed", statoPt.has(p)); disegna(); };
+    boxPt.appendChild(b);
+  });
+  Object.entries(LOTTI).forEach(([k,eti])=>{
+    const b = el("button","chip", eti);
+    b.setAttribute("aria-pressed","false");
+    b.onclick = ()=>{ statoLot.has(k)?statoLot.delete(k):statoLot.add(k);
+      b.setAttribute("aria-pressed", statoLot.has(k)); disegna(); };
+    boxLot.appendChild(b);
+  });
+
+  const corpo = document.getElementById("corpo");
+  const conteggio = document.getElementById("conteggio");
+  const niente = document.getElementById("niente");
+  let testo = "";
+
+  function disegna(){
+    const t = senzaAccenti(testo);
+    const visti = D.operatori.filter(o=>{
+      if(statoPt.size && !statoPt.has(o.punteggio??0)) return false;
+      if(statoLot.size && !statoLot.has(String(o.lotto))) return false;
+      if(t && !senzaAccenti(o.nome + " " + o.nota + " " + spoglia(o.motivo)).includes(t)) return false;
+      return true;
+    });
+    visti.sort((a,b)=>(b.punteggio??-1)-(a.punteggio??-1) || a.nome.localeCompare(b.nome,"it"));
+    corpo.innerHTML = "";
+    visti.forEach(o=>{
+      const tr = el("tr");
+      const p = o.punteggio??0;
+      tr.appendChild(el("td",null,`<span class="pt v${p}" title="${p===0?"mai screenato":"punteggio "+p}">${p===0?"—":p}</span>`));
+      tr.appendChild(el("td",null,
+        `<span class="nomeop">${o.nome}${o.nota?` <small>${o.nota}</small>`:""}</span>`));
+      tr.appendChild(el("td","motivo", o.motivo));
+      const td = el("td");
+      if(o.scheda){
+        const b = el("button","vaischeda","scheda →");
+        b.onclick = ()=>{ vai("schede"); apriScheda(o.scheda); };
+        td.appendChild(b);
+      }
+      tr.appendChild(td);
+      corpo.appendChild(tr);
+    });
+    niente.hidden = visti.length>0;
+    conteggio.innerHTML = `<b>${visti.length}</b> operatori su ${D.operatori.length}` +
+      (visti.filter(o=>o.scheda).length ? ` · <b>${visti.filter(o=>o.scheda).length}</b> con scheda completa` : "");
+  }
+  window.filtraOperatori = q => { testo = q; disegna(); };
+  disegna();
+})();
+
+/* --------------------------------------------------------------- schede */
+let apriScheda;
+(function(){
+  const s = document.getElementById("schede");
+  s.innerHTML = `
+    <p class="occhiello">Fase 5 · prompt 2</p>
+    <h1 class="titolone">Tredici schede <em>a quattordici campi</em></h1>
+    <p class="sommario">Ogni campo compilato o dichiarato <code>non trovato</code> con l'indicazione di dove
+      si è cercato, ogni affermazione con la sua marcatura, ogni fonte con URL e data. Nessuna valutazione
+      strategica: quella sta nella sintesi.</p>
+    <div class="duecolonne">
+      <nav class="indice" id="indice-schede"></nav>
+      <div><div class="testata"><h2 id="tit-scheda"></h2></div>
+        <div class="doc" id="corpo-scheda"></div></div>
+    </div>`;
+  const indice = document.getElementById("indice-schede");
+  const tit = document.getElementById("tit-scheda");
+  const corpo = document.getElementById("corpo-scheda");
+
+  D.schede.forEach(sc=>{
+    const b = el("button",null,sc.titolo);
+    b.dataset.slug = sc.slug;
+    b.onclick = ()=>apriScheda(sc.slug);
+    indice.appendChild(b);
+  });
+
+  apriScheda = (slug, silenzioso)=>{
+    const sc = D.schede.find(x=>x.slug===slug) || D.schede[0];
+    tit.textContent = sc.titolo;
+    corpo.innerHTML = sc.html;
+    indice.querySelectorAll("button").forEach(b=>b.classList.toggle("attivo", b.dataset.slug===sc.slug));
+    if(silenzioso) return;
+    if(location.hash !== "#schede/"+sc.slug) history.replaceState(null,"","#schede/"+sc.slug);
+    corpo.scrollIntoView({block:"start", behavior:"smooth"});
+  };
+  apriScheda(D.schede[0].slug, true);
+})();
+
+/* ------------------------------------------------- scouting e metodo */
+function raccolta(idSez, occhiello, titolo, sommario, pezzi){
+  const s = document.getElementById(idSez);
+  s.innerHTML = `
+    <p class="occhiello">${occhiello}</p>
+    <h1 class="titolone">${titolo}</h1>
+    <p class="sommario">${sommario}</p>
+    <div class="duecolonne">
+      <nav class="indice" id="ind-${idSez}"></nav>
+      <div><div class="testata"><h2 id="tit-${idSez}"></h2></div>
+        <div class="doc" id="cor-${idSez}"></div></div>
+    </div>`;
+  const ind = document.getElementById("ind-"+idSez);
+  const tit = document.getElementById("tit-"+idSez);
+  const cor = document.getElementById("cor-"+idSez);
+  const validi = pezzi.filter(p=>D.documenti[p.doc]);
+  validi.forEach(p=>{
+    const b = el("button",null,p.eti);
+    b.dataset.doc = p.doc;
+    b.onclick = (ev)=>{
+      tit.textContent = p.eti;
+      cor.innerHTML = D.documenti[p.doc];
+      ind.querySelectorAll("button").forEach(x=>x.classList.toggle("attivo", x.dataset.doc===p.doc));
+      if(ev && ev.isTrusted) cor.scrollIntoView({block:"start", behavior:"smooth"});
+    };
+    ind.appendChild(b);
+  });
+  if(validi.length) ind.firstChild.onclick(null);
+}
+
+raccolta("scouting","Fase 1-2 · sette angoli","Da dove <em>vengono i nomi</em>",
+  "Sette ricerche indipendenti, una per angolo, più il consolidamento che le fonde e dichiara da quanti angoli è emerso ciascun operatore. Chi compare da tre angoli o più è quasi sempre rilevante.",
+  [{eti:"Consolidato",doc:"consolidato"},{eti:"A · appalti pubblici",doc:"scouting_a"},
+   {eti:"B · osservatori e associazioni",doc:"scouting_b"},{eti:"C · programmi corporate",doc:"scouting_c"},
+   {eti:"D · eventi di settore",doc:"scouting_d"},{eti:"E · citati dai clienti",doc:"scouting_e"},
+   {eti:"F · annunci e nuovi entranti",doc:"scouting_f"},{eti:"G · estero, per modello",doc:"scouting_g"},
+   {eti:"Screening lotto 1",doc:"lotto1"},{eti:"Screening lotto 2",doc:"lotto2"},
+   {eti:"Screening lotto 3",doc:"lotto3"},{eti:"Screening lotto 4",doc:"lotto4"},
+   {eti:"Screening lotto 5 · esteri",doc:"lotto5"}]);
+
+raccolta("metodo","Come si rifà","Il metodo, <em>per intero</em>",
+  "Lo schema a quattordici campi, le quattro marcature, la gerarchia delle fonti e i divieti. Più la pipeline in otto fasi e i prompt, così chiunque nel team può rifare o continuare questo lavoro senza chiedere niente a nessuno.",
+  [{eti:"Metodo e schema",doc:"metodo"},{eti:"Pipeline in otto fasi",doc:"pipeline"},
+   {eti:"Prompt per gli agenti",doc:"prompt"},{eti:"Base di partenza e buchi",doc:"base"}]);
+
+/* --------------------------------------------------------- navigazione */
+function vai(id, scorri){
+  TUTTE.forEach(v=>{
+    const s = document.getElementById(v.id);
+    if(s) s.classList.toggle("viva", v.id===id);
+  });
+  barra.querySelectorAll("a").forEach(a=>a.classList.toggle("attivo", a.dataset.id===id));
+  document.body.classList.remove("menu");
+  if(scorri!==false) window.scrollTo({top:0, behavior:"instant"});
+}
+barra.addEventListener("click", e=>{
+  const a = e.target.closest("a"); if(!a) return;
+  e.preventDefault(); location.hash = a.dataset.id;
+});
+function daHash(){
+  const h = decodeURIComponent(location.hash.slice(1));
+  if(h.startsWith("schede/")){ vai("schede"); apriScheda(h.split("/")[1]); return; }
+  vai(TUTTE.some(v=>v.id===h) ? h : "apertura");
+}
+window.addEventListener("hashchange", daHash);
+daHash();
+
+/* -------------------------------------------------------------- filtri */
+document.querySelectorAll(".mkbtn").forEach(b=>{
+  b.onclick = ()=>{
+    const on = b.dataset.on === "1";
+    b.dataset.on = on ? "0" : "1";
+    document.body.classList.toggle("spegni-" + b.dataset.mk, on);
+  };
+});
+const bSoloV = document.getElementById("solov");
+bSoloV.onclick = ()=>{
+  const on = bSoloV.getAttribute("aria-pressed") === "true";
+  bSoloV.setAttribute("aria-pressed", String(!on));
+  document.body.classList.toggle("modo-verificato", !on);
+};
+
+/* -------------------------------------------------------------- ricerca */
+const q = document.getElementById("q"), esiti = document.getElementById("esiti");
+
+const INDICE = [];
+D.operatori.forEach(o=>INDICE.push({
+  eti:o.nome, ctx:(o.punteggio==null?"base già mappata":"punteggio "+o.punteggio)+" · "+(LOTTI[String(o.lotto)]||""),
+  vai:()=>{ vai("operatori"); q.value=o.nome; window.filtraOperatori(o.nome); }
+}));
+D.schede.forEach(sc=>INDICE.push({
+  eti:sc.titolo, ctx:"scheda completa a 14 campi",
+  vai:()=>{ vai("schede"); apriScheda(sc.slug); }
+}));
+TUTTE.forEach(v=>INDICE.push({eti:v.eti, ctx:"sezione", vai:()=>{location.hash=v.id;}}));
+Object.entries(D.documenti).forEach(([chiave,html])=>{
+  const sez = TUTTE.find(v=>v.doc===chiave);
+  const tmp = document.createElement("div"); tmp.innerHTML = html;
+  tmp.querySelectorAll("h2,h3").forEach(h=>{
+    const t = h.textContent.trim();
+    if(t.length < 4) return;
+    INDICE.push({eti:t, ctx:(sez?sez.eti:chiave)+" · titolo di sezione",
+      vai:()=>{ if(sez){ location.hash = sez.id;
+        setTimeout(()=>{const d=document.querySelector("#"+sez.id+" #"+CSS.escape(h.id));
+          if(d) d.scrollIntoView({block:"start"});},60);} }});
+  });
+});
+
+let selezionato = -1, correnti = [];
+function cerca(){
+  const t = senzaAccenti(q.value.trim());
+  if(document.getElementById("operatori").classList.contains("viva")) window.filtraOperatori(q.value.trim());
+  if(t.length < 2){ esiti.classList.remove("aperto"); return; }
+  correnti = INDICE.filter(v=>senzaAccenti(v.eti).includes(t)).slice(0,40);
+  esiti.innerHTML = "";
+  if(!correnti.length){
+    esiti.innerHTML = `<p class="vuoto">Nessun titolo o operatore corrisponde.
+      Per cercare dentro il testo usa la ricerca del browser.</p>`;
+  } else {
+    correnti.forEach((v,i)=>{
+      const b = el("button",null,`${v.eti}<small>${v.ctx}</small>`);
+      b.onclick = ()=>{ v.vai(); esiti.classList.remove("aperto"); };
+      esiti.appendChild(b);
+    });
+  }
+  selezionato = -1;
+  esiti.classList.add("aperto");
+}
+q.addEventListener("input", cerca);
+q.addEventListener("keydown", e=>{
+  const b = [...esiti.querySelectorAll("button")];
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+    e.preventDefault();
+    selezionato += e.key==="ArrowDown" ? 1 : -1;
+    if(selezionato < 0) selezionato = b.length-1;
+    if(selezionato >= b.length) selezionato = 0;
+    b.forEach((x,i)=>x.classList.toggle("sel", i===selezionato));
+    if(b[selezionato]) b[selezionato].scrollIntoView({block:"nearest"});
+  }
+  if(e.key==="Enter" && b[selezionato]) b[selezionato].click();
+  if(e.key==="Escape"){ q.value=""; esiti.classList.remove("aperto"); window.filtraOperatori(""); q.blur(); }
+});
+document.addEventListener("click", e=>{ if(!e.target.closest(".cerca")) esiti.classList.remove("aperto"); });
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && document.activeElement!==q && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
+    e.preventDefault(); q.focus(); q.select();
+  }
+});
+document.getElementById("apri").onclick = ()=>document.body.classList.toggle("menu");
+</script>
+</body>
+</html>

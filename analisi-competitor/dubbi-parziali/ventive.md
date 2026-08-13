@@ -1,0 +1,18 @@
+# Ventive — incertezze residue
+
+Scheda: `schede/ventive.md` · consultato il 11/08/2026 · dominio verificato: **ventivegroup.com** · soggetto: **Ventive S.r.l.**, Roma, P.IVA 15435551005 (esclusa l'omonima statunitense Ventive LLC, ventive.com).
+
+| # | Cosa non è stato determinato | Fonte che servirebbe |
+|---|---|---|
+| 1 | La compagine sociale aggiornata dopo il round 2025 e le percentuali di possesso: i comunicati nominano gli investitori entrati ma non le quote. | Visura camerale ordinaria della Camera di Commercio di Roma (REA RM 1590212) o l'atto notarile di aumento di capitale del 6/10/2025 (notaio Guglielmo Siniscalchi). |
+| 2 | Come è remunerata l'advisory di fundraising: se esiste una success fee sul capitale raccolto e a quale aliquota. Le pagine dedicate non lo spiegano. | Lettera d'incarico o contratto tipo, oppure testimonianza diretta di una startup cliente o di un investitore del Club Deal. |
+| 3 | La quota di equity acquisita dal programma di incubazione InVentive, dichiarato «senza alcun costo» ma remunerato in equity. | Regolamento della call InVentive, term sheet del programma o visura di una delle startup incubate. |
+| 4 | Se la sede di Londra annunciata a settembre 2025 sia stata effettivamente costituita, con quale denominazione, quando e con quali director. | Ricerca su Companies House (UK) per denominazione e per director Roberto Sfoglietta. |
+| 5 | Se esista un committente corporate reale della linea Open Innovation & Corporate Venture Capital: nessun nome è pubblicato. | Comunicato stampa del corporate stesso, case study pubblicato, o avviso/contratto reperibile in fonte pubblica. |
+| 6 | Il fatturato 2025 e la composizione dei ricavi fra fee di servizio e proventi da partecipazioni; l'ultimo dato disponibile è il 2024. | Bilancio d'esercizio 2025 depositato al Registro Imprese (o banca dati con nota integrativa). |
+| 7 | L'organico effettivo al 2026: le fonti oscillano fra 6-9 addetti, 13 nomi sul sito, 11-50 su Crunchbase e 25 persone dichiarate nel 2022. | Nota integrativa/dipendenti medi del bilancio depositato, oppure headcount ufficiale dichiarato dalla società. |
+| 8 | La provenienza professionale precedente delle persone chiave (aziende e ruoli anteriori a Ventive). | Profili LinkedIn individuali, non recuperabili in questa sessione perché LinkedIn blocca il fetch via robots.txt; in alternativa interviste o profili biografici pubblicati. |
+| 9 | La discrepanza sui co-fondatori: Crunchbase indica Marco Scioli come co-founder e Riccardo Angioli fra le key people, nomi assenti dalla pagina «About us» del 2026. | Visura storica con elenco soci fondatori, oppure statuto/atto costitutivo 2019. |
+| 10 | Se il numero dichiarato di «35+ operazioni di successo» e «oltre 30 mln investiti» sia verificabile: solo una exit è nominata (Karma Digital ceduta a Intent SpA) e una sola operazione è confermata da terzi (Gyala, marzo 2026). | Elenco delle exit con controparti e date, oppure database transazioni a pagamento (Dealroom, PitchBook) con record per investitore. |
+| 11 | Se esista un veicolo di investimento strutturato (fondo o SICAF) distinto dalla S.r.l. operativa: sono nominate le holding Moonstone e Insquared ma non è chiaro il rapporto con Ventive S.r.l. | Visure delle società Moonstone e Insquared, o albo/registri di vigilanza per eventuali veicoli regolamentati. |
+| 12 | Se nel periodo febbraio-agosto 2026 vi siano stati fatti rilevanti oltre al co-investimento in Gyala: nessun altro comunicato è emerso dalla ricerca. | Rassegna stampa a pagamento sul periodo, o la sezione news/comunicati del sito (non individuata come archivio datato). |
